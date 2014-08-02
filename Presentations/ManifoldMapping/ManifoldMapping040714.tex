@@ -1,0 +1,240 @@
+% $Header: /Users/joseph/Documents/LaTeX/beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 90e850259b8b 2007/01/28 20:48:30 tantau $
+
+\documentclass{beamer}
+\usepackage{graphicx}
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+
+\mode<presentation>
+{
+  \usetheme{Madrid}
+  % or ...
+\usecolortheme{beaver}
+  \setbeamercovered{transparent}
+  \setbeamerfont{section number projected}{%
+  family=\rmfamily,series=\bfseries,size=\normalsize}
+  \setbeamercolor{section number projected}{bg=gray,fg=white}
+    \usefonttheme{professionalfonts} 
+    \setbeamertemplate{itemize item}{\color{gray}$\bullet$}
+   \setbeamercolor{caption name}{fg=structure!10!black}
+}
+
+\usepackage{verbatim}
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+
+\title[Manifold Mapping] % (optional, use only with long paper titles)
+{Paper Summary: Solving Variational Problems and Partial Differential Equations Mapping into General Target Manifolds (M\'{e}moli, Sapiro, Osher)}
+
+
+\author[King] % (optional, use only with lots of authors)
+{\vspace{1cm}\\
+Nathan King}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[SFU] % (optional, but mostly needed)
+{
+  Department of Mathematics\\
+Simon Fraser University\\
+ }
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[April 7, 2013] % (optional, should be abbreviation of conference name)
+{April 7, 2013}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Numerical Analysis}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\usepackage{makecell}
+\usepackage{algorithmic,algorithm}
+\newcolumntype{x}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{amsmath}
+\usepackage{tikz}
+\newcommand\diag[4]{%
+  \multicolumn{1}{p{#2}|}{\hskip-\tabcolsep
+  $\vcenter{\begin{tikzpicture}[baseline=0,anchor=south west,inner sep=#1]
+  \path[use as bounding box] (0,0) rectangle (#2+2\tabcolsep,\baselineskip);
+  \node[minimum width={#2+2\tabcolsep},minimum height=\baselineskip+\extrarowheight] (box) {};
+  \draw (box.north west) -- (box.south east);
+  \node[anchor=south west] at (box.south west) {#3};
+  \node[anchor=north east] at (box.north east) {#4};
+ \end{tikzpicture}}$\hskip-\tabcolsep}}
+
+
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{document}
+  
+  
+  
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+% Structuring a talk is a difficult task and the following structure
+% may not be suitable. Here are some rules that apply for this
+% solution: 
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+% - A conference audience is likely to know very little of what you
+%   are going to talk about. So *simplify*!
+% - In a 20min talk, getting the main ideas across is hard
+%   enough. Leave out details, even if it means being less precise than
+%   you think necessary.
+% - If you omit details that are vital to the proof/implementation,
+%   just say so once. Everybody will be happy with that.
+
+
+
+\begin{frame}{Mapping Between Manifolds}
+\begin{itemize}
+\item Let $\mathcal{M}$ denote the source manifold and $\mathcal{N}$ the target manifold.
+\item Signed distance functions of $\mathcal{M}$ and $\mathcal{N}$ are $\phi$ and $\psi,$ respectively.
+\item Goal is to compute a vector function $\vec{u} : \mathcal{M} \rightarrow \mathcal{N}$ that minimizes $$E[\vec{u}]=\frac{1}{2} \int_{\mathcal{M}} \| {\bf J}_{\vec{u}}\|^2_{\mathcal{F}} \; d\mathcal{M}, $$ where ${\bf J}_{\vec{u}}$ is the Jacobian of the map $\vec{u} : \mathcal{M}\rightarrow \lbrace \psi  = 0 \rbrace.$
+%\item Note that $\vec{u}$ is already being restricted to $\mathcal{N} = \lbrace \psi=0 \rbrace$  allowing us to work in the embedding space, while guaranteeing that $\vec{u}$ will always be onto $\mathcal{N}.$
+\item The Frobenius matrix norm is used, $\| \cdot \|^2_{\mathcal{F}} = \sum_{ij} (\cdot)^2_{ij}.$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Euler--Lagrange Equation}
+\begin{itemize}
+\item The Euler--Lagrange equation of $E[\vec{u}]$ is 
+\begin{equation*}
+\Delta \vec{u} + \left( \sum_{k=1}^d {\bf H}_{\psi} \left[\frac{\partial \vec{u}}{\partial x_k} ,\frac{\partial \vec{u}}{\partial x_k}\right] \right) \nabla \psi(\vec{u}) =0.
+\end{equation*}
+\item Notation of ${\bf A} [\vec{x},\vec{y}] = \vec{y}^T {\bf A} \vec{x}$ is used.
+\item Solution to the Euler--Lagrange equation is a map, $\vec{u},$ onto $\mathcal{N}.$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+\item Derivation involves classical variational techniques, but have to add a projection step to ensure $\vec{u} :\mathcal{M} \rightarrow \lbrace \psi =0 \rbrace.$
+\item Assume $\vec{u}$ is a map that minimizes $E[\vec{u}]$ and for $t>0$ construct the variation $$\vec{w}_t = \mathcal{P}_{\lbrace \psi = 0 \rbrace} (\vec{u} +t \vec{r}),$$ where $\vec{r}$ is compact $C^{\infty}$ and $\mathcal{P}_{\lbrace \psi = 0 \rbrace}: \mathbb{R}^d\rightarrow \lbrace \psi = 0 \rbrace$ is defined as $$\mathcal{P}_{\lbrace \psi = 0 \rbrace} (\vec{v}) = \vec{v} - \psi(\vec{v}) \nabla \psi (\vec{v}).$$
+\item Since the energy achieves a minimum at $t=0$
+\begin{equation*}
+\left. \frac{d E(\vec{u} +t \vec{r})}{d t} \right\vert_{t=0} = 0 \hspace{0.5cm}\Longleftrightarrow \hspace{0.25cm}\sum_{ij} \int_{\mathcal{M}} \left. \left( \frac{\partial w^i_t}{\partial x_j} \frac{d\left(\frac{\partial w^i_t}{\partial x_j}\right)}{d t} \right) \right\vert_{t=0} d\mathcal{M} =0.
+\end{equation*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+  \item We compute the terms $\frac{\partial w^i_t}{\partial x_j}$ and $\frac{d\left(\frac{\partial w^i_t}{\partial x_j}\right)}{d t}$ separately.
+\item \begin{align*}
+\frac{\partial \vec{w}_t}{\partial x_j} = \left( \frac{\partial \vec{u}}{\partial x_j} + t \frac{\partial \vec{r}}{\partial x_j}\right) &- \left[ \nabla \psi(\vec{w}_t) \cdot \left( \frac{\partial \vec{u}}{\partial x_j} + t \frac{\partial \vec{r}}{\partial x_j}\right) \right] \nabla \psi(\vec{w}_t)\\
+& - \psi(\vec{w}_t) {\bf H}_{\psi} (\vec{w}_t) \left( \frac{\partial \vec{u}}{\partial x_j} + t \frac{\partial \vec{r}}{\partial x_j}\right).
+\end{align*}
+\item \begin{equation}
+\left.\frac{\partial \vec{w}_t}{\partial x_j}\right\vert_{t=0} = \frac{\partial \vec{u}}{\partial x_j} - \left[ \nabla \psi(\vec{u}) \cdot  \frac{\partial \vec{u}}{\partial x_j}  \right] \nabla \psi(\vec{u}),
+\end{equation}
+since $\psi (\vec{u}) = 0.$
+\item Notice also that $$\nabla \psi (\vec{u}) \frac{\partial \vec{u}}{\partial x_j} = \frac{\partial \psi(\vec{u})}{\partial x_j} =0\hspace{0.5cm}\Rightarrow \hspace{0.5cm} \left.\frac{\partial \vec{w}_t}{\partial x_j}\right\vert_{t=0}= \frac{\partial \vec{u}}{\partial x_j}.$$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+\item Now calculate \begin{equation}
+\left.\frac{d\left(\frac{\partial w^i_t}{\partial x_j}\right)}{d t}\right\vert_{t=0}=\frac{\partial 
+\left. \left(\frac{d w_t^i}{d t}\right\vert_{t=0}\right)}{\partial x_j}.
+\end{equation}
+% want to work with second form since it is simplier because can sub in t=0 after derivative wrt t is done.
+\item $$\frac{d w_t^i}{d t} = \vec{r} - (\nabla \psi (\vec{w}_t) \cdot \vec{r} ) \nabla \psi (\vec{w}_t ) - \psi (\vec{w}_t ) {\bf H}_{\psi}(\vec{w}_t) \vec{r},$$ $$\Rightarrow \left.\frac{d w_t^i}{d t}\right\vert_{t=0} = \vec{r} - (\nabla \psi (\vec{u}) \cdot \vec{r} ) \nabla \psi (\vec{u} ).$$
+\item Then
+\begin{align*}
+\frac{\partial \left(\left.\frac{d w_t^i}{d t}\right\vert_{t=0}\right)}{\partial x_j} &= \frac{\partial \vec{r}}{\partial x_j} - \nabla \psi (\vec{u}) \left[ \frac{\partial \vec{r}}{\partial x_j} \cdot \nabla \psi (\vec{u}) + {\bf H}_{\psi} \left( \vec{r} \cdot \frac{\partial \vec{u}}{\partial x_j} \right) \right] \\
+&- (\vec{r}\cdot \nabla \psi(\vec{u}) ) \left( {\bf H}_{\psi} \frac{\partial \vec{u}}{\partial x_j}\right).
+\end{align*}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+\item Now we put all the pieces together. 
+\begin{align*}
+\left.\frac{d E}{d t} \right\vert_{t=0} &= \sum_{j} \int_{\mathcal{M}} \left.\left( \frac{\partial \vec{w}_t}{\partial x_j} \frac{d\left(\frac{\partial \vec{w}_t}{\partial x_j}\right)}{d t} \right) \right\vert_{t=0} d\mathcal{M} \\
+& = \sum_{j} \int_{\mathcal{M}} \left( \frac{\partial \vec{r}}{\partial x_j}\frac{\partial \vec{u}}{\partial x_j}- (\vec{r}\cdot \nabla \psi(\vec{u}) ) {\bf H}_{\psi} \left[\frac{\partial \vec{u}}{\partial x_j} ,\frac{\partial \vec{u}}{\partial x_j} \right] \right) d \mathcal{M}
+\end{align*}
+\begin{align*}
+\sum_{ij} \int_{\mathcal{M}} \frac{\partial \vec{r}}{\partial x_j}\frac{\partial \vec{u}}{\partial x_j} d \mathcal{M} &= \sum_i \int_{\mathcal{M}} \nabla r^i \cdot \nabla u^i \hspace{0.1cm}d \mathcal{M}\\
+ & = \sum_i \int_{\partial \mathcal{M}} r^i \frac{\partial u^i}{\partial {\bf n}} d \mathcal{S} - \int_{\mathcal{M}} r^i \Delta u^i\hspace{0.1cm} d\mathcal{M},
+\end{align*}
+where $\nabla r^i \cdot \nabla u^i = \nabla \cdot (r^i \nabla u^i) - r^i \Delta u^i$ and then the divergence theorem is applied to get the bottom line.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+\item Now we want to determine when $\left.\frac{d E}{d t} \right\vert_{t=0}=0,$
+\begin{align*}
+ \left.\frac{d E}{d t} \right\vert_{t=0} =&\int_{\partial \mathcal{M}} \vec{r}\cdot {\bf J}_{\vec{u}}{\bf \; n}\; d \mathcal{S} \\
+ &- \int_{\mathcal{M}} \vec{r}\cdot \left\lbrace \Delta \vec{u} + \left( \sum_{k} {\bf H}_{\psi} \left[ \frac{\partial \vec{u}}{\partial x_k},\frac{\partial \vec{u}}{\partial x_k}\right] \right) \nabla \psi (\vec{u}) \right\rbrace d\mathcal{M},
+\end{align*}
+\item Boundary condition is eliminated since the support of $\vec{r}$ is compactly included in $\mathcal{M}.$
+\item Thus for other integral term we need
+\begin{equation*}
+\Delta \vec{u} + \left( \sum_{k=1}^d {\bf H}_{\psi} \left[\frac{\partial \vec{u}}{\partial x_k} ,\frac{\partial \vec{u}}{\partial x_k}\right] \right) \nabla \psi(\vec{u}) =0.
+\end{equation*}
+  \end{itemize}
+\end{frame}
+\end{document}

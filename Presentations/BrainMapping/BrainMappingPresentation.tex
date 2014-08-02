@@ -1,0 +1,248 @@
+% $Header: /Users/joseph/Documents/LaTeX/beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 90e850259b8b 2007/01/28 20:48:30 tantau $
+
+\documentclass{beamer}
+\usepackage{graphicx}
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+
+\mode<presentation>
+{
+  \usetheme{Madrid}
+  % or ...
+\usecolortheme{beaver}
+  \setbeamercovered{transparent}
+  \setbeamerfont{section number projected}{%
+  family=\rmfamily,series=\bfseries,size=\normalsize}
+  \setbeamercolor{section number projected}{bg=gray,fg=white}
+    \usefonttheme{professionalfonts} 
+    \setbeamertemplate{itemize item}{\color{gray}$\bullet$}
+   \setbeamercolor{caption name}{fg=structure!10!black}
+}
+
+\usepackage{verbatim}
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+
+\title[Brain Mapping] % (optional, use only with long paper titles)
+{Paper Summary: Direct Cortical Mapping via Solving Partial Differential Equations on Implicit Surfaces (Shi, Thompson, Dinov, Osher, Toga)}
+
+
+\author[King] % (optional, use only with lots of authors)
+{\vspace{1cm}\\
+Nathan King}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[SFU] % (optional, but mostly needed)
+{
+  Department of Mathematics\\
+Simon Fraser University\\
+ }
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[March 3, 2014] % (optional, should be abbreviation of conference name)
+{March 3, 2014}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Numerical Analysis}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\usepackage{makecell}
+\usepackage{algorithmic,algorithm}
+\newcolumntype{x}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{amsmath}
+\usepackage{tikz}
+\newcommand\diag[4]{%
+  \multicolumn{1}{p{#2}|}{\hskip-\tabcolsep
+  $\vcenter{\begin{tikzpicture}[baseline=0,anchor=south west,inner sep=#1]
+  \path[use as bounding box] (0,0) rectangle (#2+2\tabcolsep,\baselineskip);
+  \node[minimum width={#2+2\tabcolsep},minimum height=\baselineskip+\extrarowheight] (box) {};
+  \draw (box.north west) -- (box.south east);
+  \node[anchor=south west] at (box.south west) {#3};
+  \node[anchor=north east] at (box.north east) {#4};
+ \end{tikzpicture}}$\hskip-\tabcolsep}}
+
+
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{document}
+  
+  
+  
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+% Structuring a talk is a difficult task and the following structure
+% may not be suitable. Here are some rules that apply for this
+% solution: 
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+% - A conference audience is likely to know very little of what you
+%   are going to talk about. So *simplify*!
+% - In a 20min talk, getting the main ideas across is hard
+%   enough. Leave out details, even if it means being less precise than
+%   you think necessary.
+% - If you omit details that are vital to the proof/implementation,
+%   just say so once. Everybody will be happy with that.
+
+
+
+\begin{frame}{Example: Heat Equation on a Surface}
+\begin{itemize}
+\item Let $\mathcal{S}$ denote the surface and $\phi : \mathbb{R}^3 \rightarrow \mathbb{R}$ a level set function (for simplicity take $\phi$ as signed distance function).
+\item  The zero level set function, i.e. $\phi=0,$ represents $\mathcal{S}.$ 
+
+\item The heat equation defined on $\mathcal{S}$ is $$\frac{\partial u}{\partial t} =\Delta_{\mathcal{S}} u$$
+
+\item We extend the data $u$ off $\mathcal{S}$ in normal direction, that is $$\nabla u \cdot \nabla \phi=0.$$
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Example: Heat Equation on a Surface}
+\begin{itemize}
+\item  The intrinsic gradient of $u$ on $\mathcal{S}$ can be represented in terms of gradients in $\mathbb{R}^3$ as $$\nabla_{\mathcal{S}} u = \mathcal{P}_{\nabla \phi} \nabla u.$$
+
+\item The operator $$\mathcal{P}_v=I-\frac{v\otimes v}{\| v \|^2}=I-\frac{v \hspace{0.1cm} v^T}{\| v \|^2}$$ projects any given vector into a plane orthogonal to $v.$
+
+\item The heat equation defined on $\mathcal{S}$ becomes $$\frac{\partial u}{\partial t} =\nabla \cdot(\mathcal{P}_{\nabla \phi} \nabla u),$$ which is now defined on $\mathbb{R}^3.$
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Mapping Between Manifolds}
+\begin{itemize}
+\item Let $\mathcal{M}$ denote the source manifold and $\mathcal{N}$ the target manifold.
+\item Signed distance functions of $\mathcal{M}$ and $\mathcal{N}$ are $\phi$ and $\psi,$ respectively.
+\item Goal is to compute a vector function $u : \mathcal{M} \rightarrow \mathcal{N}$ that minimizes $$E=\frac{1}{2} \int \| J_u^{\phi}\|^2 \delta (\phi) dx, $$ where $$J_u^{\phi}=  \mathcal{P}_{\nabla \phi} \hspace{0.1cm} J_u^T$$ and $J_u$ is the regular Jacobian in $\mathbb{R}^3.$
+\item The Frobenius matrix norm is used for $\| J_u^{\phi}\|^2 = \sum_{ij} (J_u^{\phi})^2_{ij}.$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Mapping Between Manifolds}
+\begin{itemize}
+\item From the first variation of $E$ the gradient descent flow is $$\frac{\partial u}{\partial t} = \mathcal{P}_{\nabla \psi(u(x,t))} (\nabla \cdot (\mathcal{P}_{\nabla \phi} J_u^T)) .$$
+\item $\mathcal{P}_{\nabla \psi(u(x,t))}$ is the projection operator onto the tangent space of $\mathcal{N}$ at the point $u(x,t).$
+
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Brain Mapping Challenges}
+\begin{itemize}
+\item There are two major challenges when extending this method to brain mapping.
+\item First, numerical schemes must be developed to incorporate landmark constraints such as sulcal.
+\item Also, the optimization of $E$ is non-convex thus sufficient initialization is needed. %They say in the paper that since the problem is high dimensional (greater than 10^4) optimization for the gradient descent problem needs a close initialization.
+\item The purpose of the paper by Shi et al. is to overcome these challenges when using the level set method.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Incorporating Sulcal Constraints}
+  \begin{itemize}
+\item Let $\{\mathcal{C}_{\mathcal{M}}^k\}$ and $\{ \mathcal{C}_{\mathcal{N}}^k \},$ $k=1,\ldots , K,$ be the sets of sulcal curves for $\mathcal{M}$ and $\mathcal{N},$ respectively.
+\item Assume mapping between $K$ pairs of curves are known.
+\item Now the variational problem becomes $$u=\argmin_u\; E(u),$$ with boundary conditions $u(\mathcal{C}_{\mathcal{M}}^k)=\mathcal{C}_{\mathcal{N}}^k$  for all $k.$ 
+\item Boundary conditions are treated as Dirichlet type, therefore can view this as diffusion with heat flow block across sulcal curves.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Mesh Representation of Sulcal Constraints}
+  \begin{itemize}
+%\item Boundary conditions must be extended to the computational band.
+\item Approximate $\mathcal{C}_{\mathcal{M}}^k$ and $u(\mathcal{C}_{\mathcal{M}}^k)$ by sampling $L$ points, $p_1,\ldots,p_L,$ uniformly along $\mathcal{C}_{\mathcal{M}}^k.$
+\item Extend boundary condition $u(p_i),$ $i=1,\ldots, L,$ normal to the surface at $2Q+1$ points $\hat{p}_{i,j},$ $j=-Q, \ldots, Q.$
+\item Start extending $u(p_i)$ at $\hat{p}_{i,0}=p_i$ and use 
+\begin{align*}
+\hat{p}_{i,j} &=\hat{p}_{i,j+1} + h \nabla \phi(\hat{p}_{i,j-1})\hspace{1.05cm} 1\leq j\leq Q \hspace{1cm} \text{(outward)}\\
+\hat{p}_{i,j} &=\hat{p}_{i,j+1} - h \nabla \phi(\hat{p}_{i,j+1})\hspace{0.5cm} -Q\leq j\leq -1 \hspace{1cm} \text{(inward)}.
+\end{align*}
+\item Triangulated mesh is created from the $L(2Q+1)$ points $\hat{p}_{i,j}$ and linear interpolation is used to compute $u(\mathcal{C}_{\mathcal{M}}^k)$ within any triangle.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Numerical Schemes for $\nabla u$ and $\Delta u$}
+  \begin{itemize}
+\item Grid points $x_1$ and $x_2$ are {\bf connected} if a line joining them does not cross the extended surface of $\mathcal{C}_{\mathcal{M}}^k$ for all $k.$
+\item For $u=\langle u^1,u^2,u^3\rangle$ we approximate $\nabla u$ in the $x$ direction as
+\begin{displaymath}
+   D^x_+ u^d_{i,j,k}= \left\{
+     \begin{array}{ll}
+       \frac{u^d_{i+1,j,k}-u^d_{i,j,k}}{h} & (i,j,k) \text{ and } (i+1,j,k)\text{ are connected,}\\
+       \frac{u^{\sim d}_{i+1,j,k}-u^d_{i,j,k}}{h} & \text{otherwise,}
+     \end{array}
+   \right.
+\end{displaymath}
+where $u^{\sim d}_{i+1,j,k}$ is the interpolated value of $u^d$ at the intersection of the line connecting $(i,j,k)$ and $(i+1,j,k).$
+\item The Laplacian in the $x$ direction is approximated by $D^x_- D^x_+$ and similarly in the $y$ and  $z$ directions.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Initializing Optimization}
+  \begin{itemize}
+\item Sulcal curves give boundary conditions and we know $u$ should be interpolated smoothly in areas between these sulcal curves. %since we are minimizing the harmonic energy.
+\item Shi et al. proposed a front propogating type approach to find the initial map based on the latter information. 
+\item The sulcal curves act as the source of the front propagation initially, then move outward to find the map at their neighbouring points by searching locally for the best correlation of a feature called {\bf landmark context} $$\mathcal{L}\: \mathcal{C}_{\mathcal{M}}(p) = \langle d(p,\mathcal{C}_{\mathcal{M}}^1), d(p, \mathcal{C}_{\mathcal{M}}^2), \ldots, d(p,\mathcal{C}_{\mathcal{M}}^K)\rangle.$$
+  \end{itemize}
+\end{frame}
+
+
+
+
+
+\end{document}

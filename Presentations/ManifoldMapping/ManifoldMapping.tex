@@ -1,0 +1,351 @@
+% $Header: /Users/joseph/Documents/LaTeX/beamer/solutions/conference-talks/conference-ornate-20min.en.tex,v 90e850259b8b 2007/01/28 20:48:30 tantau $
+
+\documentclass{beamer}
+\usepackage{graphicx}
+% This file is a solution template for:
+
+% - Talk at a conference/colloquium.
+% - Talk length is about 20min.
+% - Style is ornate.
+
+
+
+% Copyright 2004 by Till Tantau <tantau@users.sourceforge.net>.
+%
+% In principle, this file can be redistributed and/or modified under
+% the terms of the GNU Public License, version 2.
+%
+% However, this file is supposed to be a template to be modified
+% for your own needs. For this reason, if you use this file as a
+% template and not specifically distribute it as part of a another
+% package/program, I grant the extra permission to freely copy and
+% modify this file as you see fit and even to delete this copyright
+% notice. 
+
+
+\mode<presentation>
+{
+  \usetheme{Madrid}
+  % or ...
+\usecolortheme{beaver}
+  \setbeamercovered{transparent}
+  \setbeamerfont{section number projected}{%
+  family=\rmfamily,series=\bfseries,size=\normalsize}
+  \setbeamercolor{section number projected}{bg=gray,fg=white}
+    \usefonttheme{professionalfonts} 
+    \setbeamertemplate{itemize item}{\color{gray}$\bullet$}
+   \setbeamercolor{caption name}{fg=structure!10!black}
+}
+
+\usepackage{verbatim}
+\usepackage[english]{babel}
+% or whatever
+
+\usepackage[latin1]{inputenc}
+% or whatever
+
+\usepackage{times}
+\usepackage[T1]{fontenc}
+% Or whatever. Note that the encoding and the font should match. If T1
+% does not look nice, try deleting the line with the fontenc.
+
+
+\title[Manifold Mapping] % (optional, use only with long paper titles)
+{Paper Summary: Solving Variational Problems and PDEs Mapping into General Target Manifolds (M\'{e}moli, Sapiro, Osher)}
+
+
+\author[King] % (optional, use only with lots of authors)
+{\vspace{1cm}\\
+Nathan King}
+% - Give the names in the same order as the appear in the paper.
+% - Use the \inst{?} command only if the authors have different
+%   affiliation.
+
+\institute[SFU] % (optional, but mostly needed)
+{
+  Department of Mathematics\\
+Simon Fraser University\\
+ }
+% - Use the \inst command only if there are several affiliations.
+% - Keep it simple, no one is interested in your street address.
+
+\date[May 20, 2014] % (optional, should be abbreviation of conference name)
+{May 20, 2014}
+% - Either use conference name or its abbreviation.
+% - Not really informative to the audience, more for people (including
+%   yourself) who are reading the slides online
+
+\subject{Numerical Analysis}
+% This is only inserted into the PDF information catalog. Can be left
+% out. 
+
+
+
+% If you have a file called "university-logo-filename.xxx", where xxx
+% is a graphic format that can be processed by latex or pdflatex,
+% resp., then you can add a logo as follows:
+
+% \pgfdeclareimage[height=0.5cm]{university-logo}{university-logo-filename}
+% \logo{\pgfuseimage{university-logo}}
+
+
+
+% Delete this, if you do not want the table of contents to pop up at
+% the beginning of each subsection:
+\usepackage{makecell}
+\usepackage{algorithmic,algorithm}
+\newcolumntype{x}[1]{>{\centering\arraybackslash}p{#1}}
+\usepackage{amsmath}
+\usepackage{tikz}
+\newcommand\diag[4]{%
+  \multicolumn{1}{p{#2}|}{\hskip-\tabcolsep
+  $\vcenter{\begin{tikzpicture}[baseline=0,anchor=south west,inner sep=#1]
+  \path[use as bounding box] (0,0) rectangle (#2+2\tabcolsep,\baselineskip);
+  \node[minimum width={#2+2\tabcolsep},minimum height=\baselineskip+\extrarowheight] (box) {};
+  \draw (box.north west) -- (box.south east);
+  \node[anchor=south west] at (box.south west) {#3};
+  \node[anchor=north east] at (box.north east) {#4};
+ \end{tikzpicture}}$\hskip-\tabcolsep}}
+
+
+
+
+% If you wish to uncover everything in a step-wise fashion, uncomment
+% the following command: 
+
+%\beamerdefaultoverlayspecification{<+->}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+\begin{document}
+  
+  
+  
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+% Structuring a talk is a difficult task and the following structure
+% may not be suitable. Here are some rules that apply for this
+% solution: 
+
+% - Exactly two or three sections (other than the summary).
+% - At *most* three subsections per section.
+% - Talk about 30s to 2min per frame. So there should be between about
+%   15 and 30 frames, all told.
+
+% - A conference audience is likely to know very little of what you
+%   are going to talk about. So *simplify*!
+% - In a 20min talk, getting the main ideas across is hard
+%   enough. Leave out details, even if it means being less precise than
+%   you think necessary.
+% - If you omit details that are vital to the proof/implementation,
+%   just say so once. Everybody will be happy with that.
+
+\begin{frame}{Introduction}
+\begin{itemize}
+\item Solution to variational problems or PDEs which map data from a source manifold $\mathcal{M}$ to a target manifold $\mathcal{N}.$
+\item In~\cite{five} it was shown how to address this problem with general $\mathcal{M},$ while restricting $\mathcal{N}$ to be a hyperplane or hypersphere.
+\item Framework for a flat, open source manifold $\mathcal{M}$ with general target manifold $\mathcal{N}$ is derived here.
+\item Framework for general $\mathcal{M}$ and $\mathcal{N}$ is also stated.
+%\item This framework allows us to work with numerical methods on Cartesian grids regardless of the geometry of $\mathcal{M}$ and $\mathcal{N}.$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Mapping Between Manifolds}
+\begin{itemize}
+\item Let $\mathcal{N}$ be a $d-1$--dimensional manifold, represented by the zero level set of a higher dimensional function $\psi : \mathbb{R}^d \rightarrow \mathbb{R}.$  
+\item For simplicity take $\psi$ to be a signed distance function.
+\item Goal is to compute a map $\vec{u} : \mathcal{M} \rightarrow \mathcal{N}$ that minimizes $$E[\vec{u}]= \int_{\mathcal{M}}  e[\vec{u}]\; d\mathcal{M}. $$
+%\item Note that $\vec{u}$ is already being restricted to $\mathcal{N} = \lbrace \psi=0 \rbrace$  allowing us to work in the embedding space, while guaranteeing that $\vec{u}$ will always be onto $\mathcal{N}.$
+\item To illustrate the framework, take $e[\vec{u}] = \frac{1}{2} \| {\bf J}_{\vec{u}}\|^2_{\mathcal{F}}.$  %where ${\bf J}_{\vec{u}}$ is the Jacobian of the map $\vec{u} : \mathcal{M}\rightarrow \lbrace \psi  = 0 \rbrace.$
+\item The Frobenius matrix norm is used, $\| \cdot \|^2_{\mathcal{F}} = \sum_{ij} (\cdot)^2_{ij}.$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Euler--Lagrange Equation}
+\begin{itemize}
+\item The Euler--Lagrange equation of $E[\vec{u}]$ is 
+\begin{equation*}
+\Delta \vec{u} + \left( \sum_{k=1}^d {\bf H}_{\psi} \left[\frac{\partial \vec{u}}{\partial x_k} ,\frac{\partial \vec{u}}{\partial x_k}\right] \right) \nabla \psi(\vec{u}) =0,
+\end{equation*}
+%where ${\bf H}_{\psi}$ is the Hessian of the embedding function $\psi.$
+\item Notation of ${\bf A} [\vec{x},\vec{y}] = \vec{y}^T {\bf A} \vec{x}$ is used.
+\item Solution to the Euler--Lagrange equation is a map $\vec{u}$ onto $\mathcal{N}.$
+\item Derivation involves classical variational techniques, but have to add a projection step to ensure $\vec{u} :\mathcal{M} \rightarrow \lbrace \psi =0 \rbrace.$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+
+\item Assume $\vec{u}$ is a map that minimizes $E[\vec{u}]$ and for $t>0$ construct the variation $$\vec{w}_t = \mathcal{P}_{\lbrace \psi = 0 \rbrace} (\vec{u} +t \vec{r}),$$ where $\vec{r}$ is compact $C^{\infty}$ and $\mathcal{P}_{\lbrace \psi = 0 \rbrace}: \mathbb{R}^d\rightarrow \lbrace \psi = 0 \rbrace$ is defined as $$\mathcal{P}_{\lbrace \psi = 0 \rbrace} (\vec{v}) = \vec{v} - \psi(\vec{v}) \nabla \psi (\vec{v}).$$
+\item Since the energy achieves a minimum at $t=0$
+\begin{equation*}
+\left. \frac{d E(\vec{u} +t \vec{r})}{d t} \right\vert_{t=0} = 0 \hspace{0.5cm}\Longleftrightarrow \hspace{0.25cm}\sum_{ij} \int_{\mathcal{M}} \left. \left( \frac{\partial w^i_t}{\partial x_j} \frac{d\left(\frac{\partial w^i_t}{\partial x_j}\right)}{d t} \right) \right\vert_{t=0} d\mathcal{M} =0.
+\end{equation*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+  \item We compute the terms $\frac{\partial w^i_t}{\partial x_j}$ and $\frac{d\left(\frac{\partial w^i_t}{\partial x_j}\right)}{d t}$ separately.
+\item \begin{align*}
+\frac{\partial \vec{w}_t}{\partial x_j} = \left( \frac{\partial \vec{u}}{\partial x_j} + t \frac{\partial \vec{r}}{\partial x_j}\right) &- \left[ \nabla \psi(\vec{w}_t) \cdot \left( \frac{\partial \vec{u}}{\partial x_j} + t \frac{\partial \vec{r}}{\partial x_j}\right) \right] \nabla \psi(\vec{w}_t)\\
+& - \psi(\vec{w}_t) {\bf H}_{\psi} (\vec{w}_t) \left( \frac{\partial \vec{u}}{\partial x_j} + t \frac{\partial \vec{r}}{\partial x_j}\right).
+\end{align*}
+\item \begin{equation*}
+\left.\frac{\partial \vec{w}_t}{\partial x_j}\right\vert_{t=0} = \frac{\partial \vec{u}}{\partial x_j} - \left[ \nabla \psi(\vec{u}) \cdot  \frac{\partial \vec{u}}{\partial x_j}  \right] \nabla \psi(\vec{u}),
+\end{equation*}
+since $\psi (\vec{u}) = 0.$
+\item Notice also that $$0= \frac{\partial \psi(\vec{u})}{\partial x_j} = \nabla \psi (\vec{u}) \frac{\partial \vec{u}}{\partial x_j}  \hspace{0.5cm}\Rightarrow \hspace{0.5cm} \left.\frac{\partial \vec{w}_t}{\partial x_j}\right\vert_{t=0}= \frac{\partial \vec{u}}{\partial x_j}.$$
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+\item Now calculate \begin{equation*}
+\left.\frac{d\left(\frac{\partial w^i_t}{\partial x_j}\right)}{d t}\right\vert_{t=0}=\frac{\partial 
+\left. \left(\frac{d w_t^i}{d t}\right\vert_{t=0}\right)}{\partial x_j}.
+\end{equation*}
+% want to work with second form since it is simpler because can sub in t=0 after derivative wrt t is done.
+\item $$\frac{d w_t^i}{d t} = \vec{r} - (\nabla \psi (\vec{w}_t) \cdot \vec{r} ) \nabla \psi (\vec{w}_t ) - \psi (\vec{w}_t ) {\bf H}_{\psi}(\vec{w}_t) \vec{r},$$ $$\Rightarrow \left.\frac{d w_t^i}{d t}\right\vert_{t=0} = \vec{r} - (\nabla \psi (\vec{u}) \cdot \vec{r} ) \nabla \psi (\vec{u} ).$$
+\item Then
+\begin{align*}
+\frac{\partial \left(\left.\frac{d w_t^i}{d t}\right\vert_{t=0}\right)}{\partial x_j} &= \frac{\partial \vec{r}}{\partial x_j} - \nabla \psi (\vec{u}) \left[ \frac{\partial \vec{r}}{\partial x_j} \cdot \nabla \psi (\vec{u}) + {\bf H}_{\psi} \left( \vec{r} \cdot \frac{\partial \vec{u}}{\partial x_j} \right) \right] \\
+&- (\vec{r}\cdot \nabla \psi(\vec{u}) ) \left( {\bf H}_{\psi} \frac{\partial \vec{u}}{\partial x_j}\right).
+\end{align*}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+\item Now we put all the pieces together. 
+\begin{align*}
+\left.\frac{d E}{d t} \right\vert_{t=0} &= \sum_{j} \int_{\mathcal{M}} \left.\left( \frac{\partial \vec{w}_t}{\partial x_j} \frac{d\left(\frac{\partial \vec{w}_t}{\partial x_j}\right)}{d t} \right) \right\vert_{t=0} d\mathcal{M} \\
+& = \sum_{j} \int_{\mathcal{M}} \left( \frac{\partial \vec{r}}{\partial x_j}\frac{\partial \vec{u}}{\partial x_j}- (\vec{r}\cdot \nabla \psi(\vec{u}) ) {\bf H}_{\psi} \left[\frac{\partial \vec{u}}{\partial x_j} ,\frac{\partial \vec{u}}{\partial x_j} \right] \right) d \mathcal{M}
+\end{align*}
+\begin{align*}
+\sum_{ij} \int_{\mathcal{M}} \frac{\partial \vec{r}}{\partial x_j}\frac{\partial \vec{u}}{\partial x_j} d \mathcal{M} &= \sum_i \int_{\mathcal{M}} \nabla r^i \cdot \nabla u^i \hspace{0.1cm}d \mathcal{M}\\
+ & = \sum_i \int_{\partial \mathcal{M}} r^i \frac{\partial u^i}{\partial {\bf n}} d \mathcal{S} - \int_{\mathcal{M}} r^i \Delta u^i\hspace{0.1cm} d\mathcal{M},
+\end{align*}
+where $\nabla r^i \cdot \nabla u^i = \nabla \cdot (r^i \nabla u^i) - r^i \Delta u^i$ and then the divergence theorem is applied to get the bottom line.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Derivation of Euler--Lagrange Equation}
+  \begin{itemize}
+\item Now we want to determine when $\left.\frac{d E}{d t} \right\vert_{t=0}=0,$
+\begin{align*}
+ \left.\frac{d E}{d t} \right\vert_{t=0} =&\int_{\partial \mathcal{M}} \vec{r}\cdot {\bf J}_{\vec{u}}{\bf \; n}\; d \mathcal{S} \\
+ &- \int_{\mathcal{M}} \vec{r}\cdot \left\lbrace \Delta \vec{u} + \left( \sum_{k} {\bf H}_{\psi} \left[ \frac{\partial \vec{u}}{\partial x_k},\frac{\partial \vec{u}}{\partial x_k}\right] \right) \nabla \psi (\vec{u}) \right\rbrace d\mathcal{M},
+\end{align*}
+\item Boundary condition is eliminated since the support of $\vec{r}$ is compactly included in $\mathcal{M}.$
+\item Thus for other integral term we need
+\begin{equation*}
+\Delta \vec{u} + \left( \sum_{k=1}^d {\bf H}_{\psi} \left[\frac{\partial \vec{u}}{\partial x_k} ,\frac{\partial \vec{u}}{\partial x_k}\right] \right) \nabla \psi(\vec{u}) =0.
+\end{equation*}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Gradient Descent Flow}
+  \begin{itemize}
+\item The gradient descent flow for the above Euler--Lagrange equations is
+\begin{equation}
+\begin{aligned}
+&\frac{\partial \vec{u}}{\partial t} = \Delta \vec{u} + \left( \sum_{k=1}^d {\bf H}_{\psi} \left[\frac{\partial \vec{u}}{\partial x_k} ,\frac{\partial \vec{u}}{\partial x_k}\right] \right) \nabla \psi(\vec{u}),\\
+&\vec{u}(x,0) = \vec{u}_0(x), \hspace{1cm} x \in \mathcal{M},\\
+&{\bf J}_{\vec{u}} {\bf n} |_{\partial \mathcal{M}} = 0,
+\end{aligned}
+\label{grad}
+\end{equation}
+where the vector field $\vec{u}_0(x)$ is the initial data we want to process.
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Simple Verification of Gradient Descent}
+  \begin{itemize}
+\item It is necessary that, for $\vec{u}_0 \in \{\psi = 0\},$ the solution $\vec{u}$ to equation~(\ref{grad})  also belongs to $\{\psi = 0\}.$
+\item {\it  Proposition 1.  A regular solution to equation~(\ref{grad}) holds $\psi (\vec{u} (x,t)) = 0$ $\forall x \in \mathcal{M},$ $\forall t \geq 0 $ of regularity.}
+\item If the initial data is on $\{ \psi = 0\}$ then this property is true for $t=0.$
+\item Define $v(x,t) = \psi(\vec{u}(x,t))$ and consider
+\begin{align*}
+\frac{\partial v}{\partial t} &= \nabla \psi (\vec{u}) \cdot \frac{\partial \vec{u}}{\partial t},\\
+& = \Delta \vec{u} \cdot \nabla \psi (\vec{u}) + \sum_{k=1}^d {\bf H}_{\psi} (\vec{u}) \left[\frac{\partial \vec{u}}{\partial x_k},\frac{\partial \vec{u}}{\partial x_k}\right] \nabla \psi (\vec{u}) \cdot \nabla \psi (\vec{u}) \\
+& =  \Delta \vec{u} \cdot \nabla \psi (\vec{u}) + \sum_{k=1}^d {\bf H}_{\psi} (\vec{u}) \left[\frac{\partial \vec{u}}{\partial x_k},\frac{\partial \vec{u}}{\partial x_k}\right].
+\end{align*}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Simple Verification of Gradient Descent}
+  \begin{itemize}
+\item Now $\frac{\partial v}{\partial x_i} = \nabla \psi (\vec{u}) \frac{\partial \vec{u}}{\partial x_i}$ 
+\begin{align*}
+\Rightarrow \frac{\partial^2 v}{\partial x_i^2} &= \left( {\bf H}_{\psi} (\vec{u}) \frac{\partial \vec{u}}{\partial   x_i} \right) \cdot \frac{\partial \vec{u}}{\partial x_i} + \nabla \psi(\vec{u}) \cdot \frac{\partial^2 \vec{u}}{\partial x_i^2}\\
+& = \frac{\partial^2 \vec{u}}{\partial x_i^2} \cdot \nabla \psi (\vec{u}) + {\bf H}_{\psi} (\vec{u}) \left[\frac{\partial \vec{u}}{\partial x_i},\frac{\partial \vec{u}}{\partial x_i}\right].
+\end{align*}
+\item Summing up components for $i = 1,\ldots,d$ we have
+$$\Delta v = \Delta \vec{u} \cdot \nabla \psi (\vec{u}) + \sum_{k=1}^d {\bf H}_{\psi} (\vec{u}) \left[\frac{\partial \vec{u}}{\partial x_k},\frac{\partial \vec{u}}{\partial x_k}\right] = \frac{\partial v}{\partial t},$$
+which means $v$ evolves by heat flow.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Simple Verification of Gradient Descent}
+  \begin{itemize}
+\item Notice also on $\partial \mathcal{M}$ $$\frac{\partial v}{\partial {\bf n}} = \nabla_x (\psi(\vec{u})) \cdot {\bf n} = {\bf J}_{\vec{u}}^T \nabla \psi (\vec{u}) \cdot {\bf n} = (\nabla \psi (\vec{u}))^T {\bf J}_{\vec{u}} {\bf n} =  (\nabla \psi (\vec{u}))^T {\bf 0} = 0.$$
+\item Hence $v$ follows heat flow with zero Neumann BCs and zero initial data.
+\item From uniqueness of the solution it follows that $v(x,t) = \psi(\vec{u}(x,t)) = 0$ for all $ x\in \mathcal{M}$ and  $t\geq 0.$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Generic Source and Target Manifolds}
+\begin{itemize}
+\item Let $\mathcal{M} = \{x\in \mathbb{R}^m| \phi(x) = 0\}$  be a general manifold with signed distance function $\phi.$
+\item Another projection step must be added for a generic $\mathcal{M}.$
+\item Energy density is now given by $$e_{\phi}[\vec{u}] = \frac{1}{2} \| {\bf J}_{\vec{u}}^{\phi} \|^2_{\mathcal{F}},$$ where the Jacobian of $\vec{u}$ intrinsic to $\mathcal{M}$ is ${\bf J}_{\vec{u}}^{\phi} = {\bf J}_{\vec{u}} \mathcal{P}_{\nabla \phi}.$
+\item Energy is redefined as $$E[\vec{u}] = \int_{\mathbb{R}^m} e_{\phi}[\vec{u}] \delta(\phi(x)) dx.$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Generic Source and Target Manifolds}
+\begin{itemize}
+\item The gradient descent flow becomes $$\frac{\partial \vec{u}}{\partial t} = \nabla \cdot (\mathcal{P}_{\nabla \phi} {\bf J}_{\vec{u}}^T) + \left( \sum_{k=1}^d \sum_{r=1}^m {\bf H}_{\psi} \left[ \frac{\partial \vec{u}}{\partial x_r},\frac{\partial \vec{u}}{\partial x_k}\right] (\mathcal{P}_{\nabla \phi})_{kr} \right) \nabla \psi.$$
+\item Columnwise divergence is applied, i.e. for a matrix $A,$ $\nabla \cdot A = (\nabla \cdot \vec{A}_{v_1} | \cdots | \nabla \cdot \vec{A}_{v_r}),$ where $\vec{A}_{v_i}$ is the $i$th column of $A.$
+\item $p$--harmonic maps can be implemented by changing the energy density as $$e_{\phi,p}[\vec{u}] = \frac{1}{p} \| {\bf J}_{\vec{u}}^{\phi} \|^p_{\mathcal{F}}.$$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Numerical Examples}
+\begin{itemize}
+\item Texture maps are constructed, noise added to them,  and then diffusion applied using the above framework.
+\item $\mathcal{J}$ is a surface onto which an image $I \in D \subset \mathbb{R}^2$ is mapped to. 
+\item The {\it texture map} is a map $\vec{T} : \mathcal{J}\rightarrow D.$
+\item To find $\vec{T}$ a multidimensional scaling approach is applied~\cite{fifty}.
+\item Once $\vec{T}$ is known, it is inverted to obtain $\vec{u}_0 : D \rightarrow \mathcal{J}.$
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Numerical Examples}
+\begin{itemize}
+\item A noisy map $\vec{u}: D \rightarrow \mathcal{J}$ is built as $$\vec{u}(x) = \mathcal{P}_{\mathcal{J}} \Big( \vec{u}_0(x) + \vec{{\bf n}}(x) \Big) ,$$ where $\vec{{\bf n}}: D \rightarrow \mathcal{J}$ is a random map.
+\item Gradient descent flow~(\ref{grad}) is applied with $\vec{u}$ as initial condition.
+\item Resulting map is inverted and used to paint the surface with a texture.
+\item Note, the map $\vec{u}$ is what is being processed, not the image $I$ itself.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{References}
+\begin{thebibliography}{10}
+
+\bibitem{five} M. Bertalm\'io, L.T. Cheng, S. Osher, G. Sapiro, 
+\newblock {\it Variational problems and partial differential equations on implicit surfaces}, 
+\newblock J. Comput. Phys. 174 (2) (2001) 759--780.\\
+
+\bibitem{fifty} G. Zigelman, R. Kimmel, N. Kiryati,
+\newblock {\it Texture mapping using surface flattening via multi--dimensional scaling}, 
+\newblock Technion--CIS, Technical Report 2000--01, 2000.
+\end{thebibliography}
+\end{frame}
+\end{document}
