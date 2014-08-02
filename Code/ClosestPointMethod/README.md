@@ -1,4 +1,4 @@
-This folder contains different applications of the closest method.
+This folder contains different applications of the closest point method.
 
 CPHeatCircle: My first implementation of the heat equation on a circle with the closest method.
 
