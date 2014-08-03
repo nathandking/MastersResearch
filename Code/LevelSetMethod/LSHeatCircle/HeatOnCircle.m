@@ -1,4 +1,9 @@
-%% Level Set Method for a Circle
+%% Level set method for heat equation on a circle
+% This code implements the method in "Variational problems and partial
+% differential equations on implicit surfaces", Bertalmio, Cheng, Osher and
+% Sapiro. This code is just for the simple case when the surface S is a
+% circle. To extend the original surface data into the embedding space, a
+% constant normal extension is used.
 clear all;
 tic
 
@@ -22,7 +27,7 @@ for q=1:2
 %     figure(1)
 %     surf(Qx,Qy,u0)
     
-    %% compute the gradient of the level set function Phi.
+    %% compute exact gradient of the level set function Phi.
     gPhix=Qx./sqrt(Qx.^2+Qy.^2);
     gPhix(isinf(1./gPhix))=0;
     gPhix(isnan(gPhix))=0;
