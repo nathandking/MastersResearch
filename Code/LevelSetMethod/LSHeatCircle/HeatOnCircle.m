@@ -119,35 +119,37 @@ for q=1:2
 
     for l=1:n+1
         for k=1:n+1
-                if Li(k,l)~=0
-                    Litmp=Li(k,l);
-                    Ljtmp=Lj(k,l);
-                else
-                    continue;
-                end
+            if Li(k,l)~=0
+                Litmp=Li(k,l);
+                Ljtmp=Lj(k,l);
+            else
+                continue;
+            end
+            
+            Inx=find(Li-Litmp==0);
+            Iny=find(Lj-Ljtmp==0);
+            Ind=intersect(Inx,Iny);
+            [row,col]=ind2sub([n+1,n+1],Ind);
+            Xq=zeros(1,length(row));
+            Yq=zeros(1,length(row));
         
-                Inx=find(Li-Litmp==0);
-                Iny=find(Lj-Ljtmp==0);
-                Ind=intersect(Inx,Iny);
-                [row,col]=ind2sub([n+1,n+1],Ind);
-                Xq=zeros(1,length(row));
-                Yq=zeros(1,length(row));
-        
-                for a=1:length(row)
-                    Xq(a)=cpx(row(a),col(a));
-                    Yq(a)=cpy(row(a),col(a));
-                end
-        
-                Lx=Qx(Litmp-2:Litmp+2,Ljtmp); % x points for Lagrange Interpolation.
-                Ly=Qy(Litmp,Ljtmp-2:Ljtmp+2);  % y points for Lagrange Interpolation.
-                v=u(Litmp-2:Litmp+2,Ljtmp-2:Ljtmp+2);    % solution values at the grid points.
-                
-                uStmp=barylag2d(v,Lx,Ly,Xq,Yq);
-                for a=1:length(row)
-                    u(row(a),col(a))=uStmp(a,a);
-                end
-                Li(Ind)=Li(Ind)-Litmp;
-                Lj(Ind)=Lj(Ind)-Ljtmp;
+            for a=1:length(row)
+                Xq(a)=cpx(row(a),col(a));
+                Yq(a)=cpy(row(a),col(a));
+            end
+            
+            % points for Lagrange Interpolation.
+            Lx=Qx(Litmp-2:Litmp+2,Ljtmp); 
+            Ly=Qy(Litmp,Ljtmp-2:Ljtmp+2);  
+            % solution values at the grid points.
+            v=u(Litmp-2:Litmp+2,Ljtmp-2:Ljtmp+2);    
+           
+            uStmp=barylag2d(v,Lx,Ly,Xq,Yq);
+            for a=1:length(row)
+                u(row(a),col(a))=uStmp(a,a);
+            end
+            Li(Ind)=Li(Ind)-Litmp;
+            Lj(Ind)=Lj(Ind)-Ljtmp;
         end
     end
     
