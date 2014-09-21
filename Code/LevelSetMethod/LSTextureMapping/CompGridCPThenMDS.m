@@ -45,3 +45,11 @@ end
     newx = sqrt(L(1,1)).*Q(:,1);
     newy = sqrt(L(2,2)).*Q(:,2);
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%% save results
+save('dx0p2/Qx','Qx');
+save('dx0p2/Qy','Qy');
+save('dx0p2/Qz','Qz');
+save('dx0p2/newx','newx');
+save('dx0p2/newy','newy');
