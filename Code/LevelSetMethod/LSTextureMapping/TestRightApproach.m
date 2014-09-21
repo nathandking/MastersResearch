@@ -1,7 +1,7 @@
 %% Level Set Method for Heat equation on a Sphere
 tic
 
-dx = 0.1;
+dx = 0.2;
 [n,Qx,Qy,Qz,cpx,cpy,cpz,newx,newy] = CompGridCPThenMDS(dx);
 %%
 u1 = cpx;
@@ -32,7 +32,7 @@ u3 = cpz;
     vz = zeros(n+1);
    
 
-Tf = 5;
+Tf = 0.1;
 dt = 0.001*dx^2;
 numtimesteps = ceil(Tf/dt)
 % adjust for integer number of steps
@@ -145,15 +145,18 @@ Indy = round(0.5*(newy+abs(ymi))*(size(uvColor,2)-1)/yma)+1;
 for i = 1:length(Indx)
 Ui(i) = uvColor(Indx(i),Indy(i));
 end
-%UUi = reshape(Ui,9,9,9);
+Ui = reshape(Ui,21,21,21);
 
 % figure;
 % scatter3(cpx(:),cpy(:),cpz(:),20,Ui(:))
 % 
 % figure;
 % scatter3(u1(:),u2(:),u3(:),20,Ui(:))
+% figure;
+% isosurface(Qx,Qy,Qz,sqrt(Qx.^2+Qy.^2+Qz.^2)-1,0,Ui);
+
 figure;
-isosurface(Qx,Qy,Qz,sqrt(Qx.^2+Qy.^2+Qz.^2)-1,0,Ui);
+isosurface(u1,u1,u3,sqrt(u1.^2+u2.^2+u3.^2)-1,0,Ui);
 
 % [F,V,COLORS] = MarchingCubes(Qx,Qy,Qz,sqrt(Qx.^2+Qy.^2+Qz.^2)-1,0,Ui);
 
