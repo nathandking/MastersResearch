@@ -1,7 +1,7 @@
 %% Level Set Method for Heat equation on a Sphere
 tic
 
-dx = 0.2;
+dx = 0.1;
 [n,Qx,Qy,Qz,cpx,cpy,cpz,newx,newy] = CompGridCPThenMDS(dx);
 %%
 u1 = cpx;

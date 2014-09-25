@@ -48,8 +48,8 @@ end
 
 
 %% save results
-save('dx0p2/Qx','Qx');
-save('dx0p2/Qy','Qy');
-save('dx0p2/Qz','Qz');
-save('dx0p2/newx','newx');
-save('dx0p2/newy','newy');
+save('dx0p1/Qx','Qx');
+save('dx0p1/Qy','Qy');
+save('dx0p1/Qz','Qz');
+save('dx0p1/newx','newx');
+save('dx0p1/newy','newy');
