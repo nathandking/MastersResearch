@@ -8,11 +8,12 @@ clear all
 close all
 restoredefaultpath;
 addpath('cp_matrices_Sphere');
+tic
 %%
 % 3D example on a sphere
 % Construct a grid in the embedding space
 
-dx = 0.1;                   % grid size
+dx = 0.025;                   % grid size
 
 % make vectors of x, y, positions of the grid
 x1d = (-2.0:dx:2.0)';
@@ -75,11 +76,13 @@ L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 
 %% Compute initial mapping of image onto sphere.
-[newx, newy, xS, yS, zS, U] = InitialMap(41);
+disp('Constructing initial map');
+[newx, newy, xS, yS, zS, U] = InitialMap(81);
 W = double(U);
-%% Construct an interpolation matrix to get color onto computational points.
+disp('Initial map made');
+%% Interpolation to get color onto computational points.
 xS1 = xS(:); yS1 = yS(:); zS1 = zS(:);
-% Eplot is a matrix which interpolations data onto the plotting grid
+
 Uc = griddata(xS1, yS1, zS1, W, u1, u2, u3,'nearest');
 
 %% Visualize initial map.
@@ -91,6 +94,23 @@ Uc = griddata(xS1, yS1, zS1, W, u1, u2, u3,'nearest');
 figure;
 scatter3(u3,u2,u1,20,Uc,'fill');
 colormap('copper');
+
+%% Add noise to map.
+N1 = 0.2*rand(length(u1),1);
+N2 = 0.2*rand(length(u2),1);
+N3 = 0.2*rand(length(u3),1);
+u1 = u1 + N1;
+u2 = u2 + N2;
+u3 = u3 + N3;
+
+% map noisy data back onto sphere.
+[u1, u2, u3] = cpSphere(u1,u2,u3);
+
+% visualize
+figure;
+scatter3(u3,u2,u1,20,Uc,'fill');
+colormap('copper');
+
 %% Time-stepping for the heat equation
 
 Tf = 0.02;
@@ -98,7 +118,6 @@ dt = 0.1*dx^2;
 numtimesteps = ceil(Tf/dt)
 % adjust for integer number of steps
 dt = Tf / numtimesteps
-tic
 for kt = 1:numtimesteps
     % explicit Euler timestepping
     unew1 = u1 + dt*(L*u1);
