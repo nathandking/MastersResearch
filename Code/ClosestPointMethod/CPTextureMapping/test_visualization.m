@@ -4,8 +4,8 @@ addpath('barylag2d');
 %%
 % 3D example on a sphere
 % Construct a grid in the embedding space
-
-dx = 0.1;                   % grid size
+tic
+dx = 0.2;                   % grid size
 
 % make vectors of x, y, positions of the grid
 x1d = (-2.0:dx:2.0)';
@@ -58,8 +58,19 @@ u2 = cpyg_unique;
 u3 = cpzg_unique;
 
 %% Apply MDS to unique list.
-[newx, newy] = MDS(u1,u2,u3);
+% Compute geodesic distance between pairs of points.
+% This below only works for a sphere!
+A = [u1, u2, u3];
+NumPts = length(u1);
+M = zeros(NumPts);
+for j = 1:NumPts
+    for i = 1:NumPts
+        M(i,j) = (real(acos(sum(A(i,:,:).*A(j,:,:))))).^2;
+    end
+end
 
+[newx, newy] = MDS(M);
+toc
 %%
 % load('dx0p2/newx.mat');
 % load('dx0p2/newy.mat');
@@ -83,7 +94,8 @@ UV = [uu(:),vv(:)];
 newXY = [newx, newy];
 k = dsearchn(UV,newXY);
 p = 0;
-Ui = uvColor(k);
+uvC = uvColor(:);
+Ui = uvC(k);
 %uvC = uvColor(:);
 % for i = 1:length(k)
 % Ui(i) = barylag2d(double(uvC(k(i)-p:k(i)+p)),...
@@ -97,6 +109,6 @@ DT = delaunayTriangulation(u1,u2,u3);
 Tri = freeBoundary(DT);
 figure;
 trisurf(Tri,u1,u2,u3,Ui);
-% figure;
-% scatter3(u1(ia),u2(ia),u3(ia),20,Ui)
+ figure;
+ scatter3(u1,u2,u3,20,Ui)
 

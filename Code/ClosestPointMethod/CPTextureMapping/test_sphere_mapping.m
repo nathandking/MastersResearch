@@ -4,14 +4,15 @@
 % this and the computational grid is uniform this should be the same result
 % since the laplacian should not change points away from the boundary.
 % However the general approach needs to be implemented.
-
+clear all
+close all
 restoredefaultpath;
 addpath('cp_matrices_Sphere');
 %%
 % 3D example on a sphere
 % Construct a grid in the embedding space
 
-dx = 0.2;                   % grid size
+dx = 0.1;                   % grid size
 
 % make vectors of x, y, positions of the grid
 x1d = (-2.0:dx:2.0)';
@@ -21,8 +22,6 @@ z1d = x1d;
 nx = length(x1d);
 ny = length(y1d);
 nz = length(z1d);
-
-
 
 %% Find closest points on the surface
 % For each point (x,y,z), we store the closest point on the sphere
@@ -52,13 +51,6 @@ xg = xx(band); yg = yy(band); zg = zz(band);
 
 
 %% Function u in the embedding space
-% u is a function defined on the grid (eg heat if solving the heat
-% equation)
-
-% assign some initial value (using initial value of cos (8*theta))
-%[th, phi, r] = cart2sph(xx,yy,zz);
-%u = cos(phi + pi/2);
-
 % this makes u into a vector, containing only points in the band
 u1 = cpxg;
 u2 = cpyg;
@@ -82,18 +74,23 @@ E = interp3_matrix(x1d, y1d, z1d, cpxg, cpyg, cpzg, p, band);
 L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 
-%% Construct an interpolation matrix for plotting on sphere
+%% Compute initial mapping of image onto sphere.
+[newx, newy, xS, yS, zS, U] = InitialMap(41);
+W = double(U);
+%% Construct an interpolation matrix to get color onto computational points.
+xS1 = xS(:); yS1 = yS(:); zS1 = zS(:);
+% Eplot is a matrix which interpolations data onto the plotting grid
+Uc = griddata(xS1, yS1, zS1, W, u1, u2, u3,'nearest');
 
-% plotting grid on sphere, based on parameterization
-% [xp,yp,zp] = sphere(64);
-% xp1 = xp(:); yp1 = yp(:); zp1 = zp(:);
-% [th_plot, phi_plot, r] = cart2sph(xp1,yp1,zp1);
-% % Eplot is a matrix which interpolations data onto the plotting grid
-% Eplot = interp3_matrix(x1d, y1d, z1d, xp1, yp1, zp1, p, band);
-% 
-% figure(3); set(gcf,'Position', [410 700 800 800]);
+%% Visualize initial map.
+% DT = delaunayTriangulation(u1,u2,u3);
+% Tri = freeBoundary(DT);
+% figure;
+% trisurf(Tri,u1,u2,u3,Uc);
 
-
+figure;
+scatter3(u3,u2,u1,20,Uc,'fill');
+colormap('copper');
 %% Time-stepping for the heat equation
 
 Tf = 0.02;
@@ -116,30 +113,8 @@ for kt = 1:numtimesteps
     
 end
 
-load('dx0p2/newx.mat');
-load('dx0p2/newy.mat');
-uvColor = checkerboard(10,2,2);
-xmi = min(min(newx)); xma = max(max(newx));
-ymi = min(min(newy)); yma = max(max(newy));
-
-u = xmi:(xma-xmi)/(size(uvColor,1)-1):xma;
-v = ymi:(yma-ymi)/(size(uvColor,2)-1):yma;
-
 figure;
-imagesc(uvColor);
+scatter3(u3,u2,u1,20,Uc,'fill');
+colormap('copper');
 
-%% relate (newx,newy) with corresponding colors on checkered image
-
-Indx = round(0.5*(newx+abs(xmi))*(size(uvColor,1)-1)/xma)+1;
-Indy = round(0.5*(newy+abs(ymi))*(size(uvColor,2)-1)/yma)+1;
-
-for i = 1:length(Indx)
-Ui(i) = uvColor(Indx(i),Indy(i));
-end
-
-DT = delaunayTriangulation(u1(:),u2(:),u3(:));
-[F,V] = freeBoundary(DT);
-figure;
-patch('Faces',F,'Vertices',V);
-%scatter3(u1(:),u2(:),u3(:),20,Ui(band))
 t_explicit = toc
