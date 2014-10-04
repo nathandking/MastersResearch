@@ -77,7 +77,7 @@ L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 %% Compute initial mapping of image onto sphere.
 disp('Constructing initial map');
-[newx, newy, xS, yS, zS, U] = InitialMap(81);
+[newx, newy, xS, yS, zS, U] = InitialMap(41);
 W = double(U);
 disp('Initial map made');
 %% Interpolation to get color onto computational points.

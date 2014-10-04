@@ -43,11 +43,11 @@ U = Tg(k);
 % U(i) = barylag2d(double(Tg(k(i)-p:k(i)+p)),...
 %     uu(k(i)-p:k(i)+p),vv(k(i)-p:k(i)+p),newx(i),newy(i));
 % end
-
-DT = delaunayTriangulation(xS(:),yS(:),zS(:));
-Tri = freeBoundary(DT);
-figure;
-trisurf(Tri,xS(:),yS(:),zS(:),U);
-
-figure;
-scatter3(xS(:),yS(:),zS(:),20,U);
+% 
+% DT = delaunayTriangulation(xS(:),yS(:),zS(:));
+% Tri = freeBoundary(DT);
+% figure;
+% trisurf(Tri,xS(:),yS(:),zS(:),U);
+% 
+% figure;
+% scatter3(xS(:),yS(:),zS(:),20,U);
