@@ -13,7 +13,7 @@ tic
 % 3D example on a sphere
 % Construct a grid in the embedding space
 
-dx = 0.0125;                   % grid size
+dx = 0.025;                   % grid size
 
 % make vectors of x, y, positions of the grid
 x1d = (-2.0:dx:2.0)';
@@ -29,7 +29,7 @@ nz = length(z1d);
 % (cpx,cpy,cpz)
 
 % meshgrid is only needed for finding the closest points, not afterwards
-[xx yy zz] = meshgrid(x1d, y1d, z1d);
+[xx, yy, zz] = meshgrid(x1d, y1d, z1d);
 % function cpSphere for finding the closest points on a sphere
 [cpx, cpy, cpz, dist] = cpSphere(xx,yy,zz);
 % make into vectors
@@ -77,7 +77,7 @@ L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 %% load initial mapping of image onto sphere.
 
-load('InitialMaps/SphereMDS121.mat');
+load('InitialMaps/JackOLanternSphereMDS81.mat');
 W = double(U);
 
 %% Interpolation to get color onto computational points.
@@ -94,7 +94,7 @@ DT = delaunayTriangulation(u1,u2,u3);
 Tri = freeBoundary(DT);
 figure;
 trisurf(Tri,u1,u2,u3,Uc,'EdgeColor','none');
- 
+colormap('copper');
 % figure;
 % scatter3(u3,u2,u1,20,Uc,'fill');
 % colormap('copper');
@@ -115,7 +115,7 @@ DT = delaunayTriangulation(u1,u2,u3);
 Tri = freeBoundary(DT);
 figure;
 trisurf(Tri,u1,u2,u3,Uc,'EdgeColor','none');
-
+colormap('copper');
 % figure;
 % scatter3(u3,u2,u1,20,Uc,'fill');
 % colormap('copper');
@@ -146,7 +146,8 @@ DT = delaunayTriangulation(u1,u2,u3);
 Tri = freeBoundary(DT);
 figure;
 trisurf(Tri,u1,u2,u3,Uc,'EdgeColor','none');
-
+colormap('copper');
+%axis off;
 % figure;
 % scatter3(u3,u2,u1,20,Uc,'fill');
 % colormap('copper');

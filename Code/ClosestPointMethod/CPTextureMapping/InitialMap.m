@@ -1,6 +1,5 @@
-function [newx, newy, xS, yS, zS, U] = InitialMap(n);
+function [newx, newy, xS, yS, zS, U] = InitialMap(n)
 %% Define coordinates on surface.
-
 [xS,yS,zS] = sphere(n);
 
 %% Compute geodesic distance between pairs of points.
@@ -18,8 +17,8 @@ end
 [newx, newy] = MDS(M);
 
 %% use above flattened coordinates to place texture image on surface.
-T = imread('BlurredThreeShapes512.jpg');
-Tg = T(:);
+T = imread('JackOLantern.jpg');
+Tg = double(T(:));
 
 % scale texture image to lie within (newx,newy) coordinates.
 xmin = min(newx); ymin = min(newy);
@@ -28,26 +27,11 @@ xmax = max(newx); ymax = max(newy);
 u = (xmin:(xmax-xmin)/(size(T,1)-1):xmax)';
 v = (ymin:(ymax-ymin)/(size(T,2)-1):ymax)';
 
-[uu,vv] = meshgrid(u,v);
+[uu,vv] = ndgrid(u,v);
 
 %find indices of the closest points in (u,v) to (newx,newy).
-uv = [uu(:),vv(:)];
-newxy = [newx, newy];
-k = dsearchn(uv,newxy);
-U = Tg(k);
-
-% interpolate instead of just taking nearest neighbour.
-% p = 0;
-% Tg = T(:);
-% for i = 1:length(k)
-% U(i) = barylag2d(double(Tg(k(i)-p:k(i)+p)),...
-%     uu(k(i)-p:k(i)+p),vv(k(i)-p:k(i)+p),newx(i),newy(i));
-% end
-% 
-% DT = delaunayTriangulation(xS(:),yS(:),zS(:));
-% Tri = freeBoundary(DT);
-% figure;
-% trisurf(Tri,xS(:),yS(:),zS(:),U);
-% 
-% figure;
-% scatter3(xS(:),yS(:),zS(:),20,U);
+% uv = [uu(:),vv(:)];
+% newxy = [newx, newy];
+% k = dsearchn(uv,newxy);
+U = griddata(uu(:), vv(:), Tg, newx, newy,'natural');
+%U = Tg(k);
