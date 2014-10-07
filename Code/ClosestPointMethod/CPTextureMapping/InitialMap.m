@@ -17,7 +17,7 @@ end
 [newx, newy] = MDS(M);
 
 %% use above flattened coordinates to place texture image on surface.
-T = imread('JackOLantern.jpg');
+T = imread('BlurredThreeShapes512.jpg');
 Tg = double(T(:));
 
 % scale texture image to lie within (newx,newy) coordinates.
