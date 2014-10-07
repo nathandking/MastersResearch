@@ -13,7 +13,7 @@ tic
 % 3D example on a sphere
 % Construct a grid in the embedding space
 
-dx = 0.025;                   % grid size
+dx = 0.1;                   % grid size
 
 % make vectors of x, y, positions of the grid
 x1d = (-2.0:dx:2.0)';
@@ -77,7 +77,7 @@ L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 %% load initial mapping of image onto sphere.
 
-load('InitialMaps/JackOLanternSphereMDS81.mat');
+load('InitialMaps/SphereMDS101.mat');
 W = double(U);
 
 %% Interpolation to get color onto computational points.
@@ -90,13 +90,18 @@ xS1 = xS(:); yS1 = yS(:); zS1 = zS(:);
 Uc = griddata(xS1, yS1, zS1, W, u1, u2, u3,'nearest');
 
 %% Visualize initial map.
-DT = delaunayTriangulation(u1,u2,u3);
-Tri = freeBoundary(DT);
-figure;
-trisurf(Tri,u1,u2,u3,Uc,'EdgeColor','none');
-colormap('copper');
-% figure;
-% scatter3(u3,u2,u1,20,Uc,'fill');
+% DT = delaunayTriangulation(u1(:),u2(:),u3(:));
+% Tri = freeBoundary(DT);
+% subplot(1,3,1);
+% trisurf(Tri,u1(:),u2(:),u3(:),Uc,'EdgeColor','none');
+% view([0 1 0]);
+% axis([-1 1 -1 1 -1 1]);
+% axis off;
+
+subplot(1,3,1);
+scatter3(u3(:),u2(:),u1(:),20,Uc,'fill');
+view([0 1 0]);
+axis([-1 1 -1 1 -1 1]);
 % colormap('copper');
 
 %% Add noise to map.
@@ -111,13 +116,19 @@ u3 = u3 + N3;
 [u1, u2, u3] = cpSphere(u1,u2,u3);
 
 % visualize
-DT = delaunayTriangulation(u1,u2,u3);
-Tri = freeBoundary(DT);
-figure;
-trisurf(Tri,u1,u2,u3,Uc,'EdgeColor','none');
-colormap('copper');
-% figure;
-% scatter3(u3,u2,u1,20,Uc,'fill');
+% DT = delaunayTriangulation(u1(:),u2(:),u3(:));
+% Tri = freeBoundary(DT);
+% subplot(1,3,2);
+% trisurf(Tri,u1(:),u2(:),u3(:),Uc,'EdgeColor','none');
+% view([0 1 0]);
+% axis([-1 1 -1 1 -1 1]);
+%axis off;
+
+subplot(1,3,2);
+scatter3(u3(:),u2(:),u1(:),20,Uc,'fill');
+view([0 1 0]);
+axis([-1 1 -1 1 -1 1]);
+axis xy;
 % colormap('copper');
 
 %% Time-stepping for the heat equation
@@ -142,14 +153,18 @@ for kt = 1:numtimesteps
 end
 
 %% triangulation of surface using Delaunay triangulation.
-DT = delaunayTriangulation(u1,u2,u3);
-Tri = freeBoundary(DT);
-figure;
-trisurf(Tri,u1,u2,u3,Uc,'EdgeColor','none');
-colormap('copper');
+% DT = delaunayTriangulation(u1(:),u2(:),u3(:));
+% Tri = freeBoundary(DT);
+% subplot(1,3,3);
+% trisurf(Tri,u1(:),u2(:),u3(:),Uc,'EdgeColor','none');
+% view([0 1 0]);
+% axis([-1 1 -1 1 -1 1]);
 %axis off;
-% figure;
-% scatter3(u3,u2,u1,20,Uc,'fill');
+
+subplot(1,3,3);
+scatter3(u3(:),u2(:),u1(:),20,Uc,'fill');
+view([0 1 0]);
+axis([-1 1 -1 1 -1 1]);
 % colormap('copper');
 
 t_explicit = toc
