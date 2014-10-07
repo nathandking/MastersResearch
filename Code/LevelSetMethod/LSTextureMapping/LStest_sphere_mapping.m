@@ -1,4 +1,7 @@
 %% Level Set Method for Heat equation on a Sphere
+clear all
+close all
+
 tic
 % 3D example on a sphere
 % Construct a grid in the embedding space
@@ -27,47 +30,36 @@ n = nx-1;
 cpxg = cpx(:); cpyg = cpy(:); cpzg = cpz(:);
 Qx = xx; Qy = yy; Qz = zz;
 
-% %% Banding: do calculation in a narrow band around the sphere
-% dim = 3;    % dimension
-% p = 3;      % interpolation degree
-% order = 2;  % Laplacian order
-% % "band" is a vector of the indices of the points in the computation
-% % band.  The formula for bw is found in [Ruuth & Merriman 2008] and
-% % the 1.0001 is a safety factor.
-% bw = 1.0001*sqrt((dim-1)*((p+1)/2)^2 + ((order/2+(p+1)/2)^2));
-% band = find(abs(dist) <= bw*dx);
-% 
-% % store closest points in the band;
-% cpxg = cpxg(band); cpyg = cpyg(band); cpzg = cpzg(band);
-% xg = xx(band); yg = yy(band); zg = zz(band);
-
 
 %% Function u in the embedding space
 % this makes u into a vector, containing only points in the band
+
 u1 = cpx;
 u2 = cpy;
 u3 = cpz;
 
-%% Compute initial mapping of image onto sphere.
-disp('Constructing initial map');
-[newx, newy, xS, yS, zS, U] = InitialMap(41);
-W = double(U);
-disp('Initial map made');
-%% Interpolation to get color onto computational points.
-xS1 = xS(:); yS1 = yS(:); zS1 = zS(:);
-size(u1)
-Uc = griddata(xS1, yS1, zS1, W, u1(:), u2(:), u3(:),'nearest');
-size(u1)
-%% Visualize initial map.
-% DT = delaunayTriangulation(u1,u2,u3);
-% Tri = freeBoundary(DT);
-% figure;
-% trisurf(Tri,u1,u2,u3,Uc);
+%% load initial mapping of image onto sphere.
 
-figure;
-scatter3(u1(:),u2(:),u3(:),20,Uc,'fill');
-colormap('copper');
+load('InitialMaps/SphereMDS81.mat');
+W = double(U);
+
+% Interpolation to get color onto computational points.
+xS1 = xS(:); yS1 = yS(:); zS1 = zS(:);
+Uc = griddata(xS1, yS1, zS1, W, u1(:), u2(:), u3(:),'nearest');
+
+% Visualize initial map.
+% DT = delaunayTriangulation(u1(:),u2(:),u3(:));
+% Tri = freeBoundary(DT);
+% subplot(1,3,1);
+% trisurf(Tri,u1(:),u2(:),u3(:),Uc,'EdgeColor','none');
+% %colormap('copper');
+% axis([-1 1 -1 1 -1 1]);
+%axis off;
+
+subplot(1,3,1);
+scatter3(u3(:),u2(:),u1(:),20,Uc,'fill');
 axis([-1 1 -1 1 -1 1]);
+% colormap('copper');
 
 %% Add noise to map.
 N1 = 0.2*rand(length(u1(:)),1);
@@ -84,68 +76,70 @@ u3 = u3 + N3;
 [u1, u2, u3] = cpSphere(u1,u2,u3);
 
 % visualize
-figure;
-scatter3(u1(:),u2(:),u3(:),20,Uc,'fill');
-colormap('copper');
+% DT = delaunayTriangulation(u1(:),u2(:),u3(:));
+% Tri = freeBoundary(DT);
+% subplot(1,3,2);
+% trisurf(Tri,u1(:),u2(:),u3(:),Uc,'EdgeColor','none');
+% %colormap('copper');
+% axis([-1 1 -1 1 -1 1]);
+%axis off;
+
+subplot(1,3,2);
+scatter3(u3(:),u2(:),u1(:),20,Uc,'fill');
 axis([-1 1 -1 1 -1 1]);
+% colormap('copper');
 
-    %% compute the gradient of the level set function Phi.
-    gPhix = Qx./sqrt(Qx.^2+Qy.^2+Qz.^2);
-    gPhix(isinf(1./gPhix)) = 0;
-    gPhix(isnan(gPhix)) = 0;
+%% compute the gradient of the level set function Phi.
+gPhix = Qx./sqrt(Qx.^2+Qy.^2+Qz.^2);
+gPhix(isinf(1./gPhix)) = 0;
+gPhix(isnan(gPhix)) = 0;
 
-    gPhiy = Qy./sqrt(Qx.^2+Qy.^2+Qz.^2);
-    gPhiy(isinf(1./gPhiy)) = 0;
-    gPhiy(isnan(gPhiy)) = 0;
+gPhiy = Qy./sqrt(Qx.^2+Qy.^2+Qz.^2);
+gPhiy(isinf(1./gPhiy)) = 0;
+gPhiy(isnan(gPhiy)) = 0;
+
+gPhiz = Qz./sqrt(Qx.^2+Qy.^2+Qz.^2);
+gPhiz(isinf(1./gPhiz)) = 0;
+gPhiz(isnan(gPhiz)) = 0;
+
+% using signed distance function so Normal=grad(Phi).
+Nx = gPhix;
+Ny = gPhiy;
+Nz = gPhiy;
     
-    gPhiz = Qz./sqrt(Qx.^2+Qy.^2+Qz.^2);
-    gPhiz(isinf(1./gPhiz)) = 0;
-    gPhiz(isnan(gPhiz)) = 0;
-
-    % using signed distance function so Normal=grad(Phi).
-    Nx = gPhix;
-    Ny = gPhiy;
-    Nz = gPhiy;
-    
-    %% solve PDE using level set method.
-    vx = zeros(n+1);
-    vy = zeros(n+1);
-    vz = zeros(n+1);
-   
-
-Tf = 0.05;
+%% solve PDE using level set method.
+Tf = 0.1;
 dt = 0.001*dx^2;
 numtimesteps = ceil(Tf/dt)
 % adjust for integer number of steps
 dt = Tf / numtimesteps
 
 for kt = 1:numtimesteps
+    %% compute gradient of u1, u2, u3.
+    [v1x, v1y, v1z] = GradwBCs(u1,dx);
+    [v2x, v2y, v2z] = GradwBCs(u2,dx);
+    [v3x, v3y, v3z] = GradwBCs(u3,dx);
+        
+    %% project gradient of u1, u2, u3 into plane z = 0.
+    [Proj1x, Proj1y, Proj1z] = PlaneProj(v1x,v1y,v1z);
+    [Proj2x, Proj2y, Proj2z] = PlaneProj(v2x,v2y,v2z);
+    [Proj3x, Proj3y, Proj3z] = PlaneProj(v3x,v3y,v3z);
+        
+    %% divergence of the projections Proj1, Proj2, Proj3.
+    w1 = DivwBCs(Proj1x, Proj1y, Proj1z, dx);
+    w2 = DivwBCs(Proj2x, Proj2y, Proj2z, dx);
+    w3 = DivwBCs(Proj3x, Proj3y, Proj3z, dx);
+        
+    %% project onto surface of sphere.
+    uNormSq = u1.^2 + u2.^2 + u3.^2;
+    SProj1 = w1 - (u1.^2.*w1 + u1.*u2.*w2 + u1.*u3.*w3)./uNormSq;
+    SProj2 = w2 - (u2.*u1.*w1 + u2.^2.*w2 + u2.*u3.*w3)./uNormSq;
+    SProj3 = w3 - (u3.*u1.*w1 + u3.*u2.*w2 + u3.^2.*w3)./uNormSq;
     
-        %% compute gradient of u1, u2, u3.
-        [v1x, v1y, v1z] = GradwBCs(u1,dx);
-        [v2x, v2y, v2z] = GradwBCs(u2,dx);
-        [v3x, v3y, v3z] = GradwBCs(u3,dx);
-        
-        %% project gradient of u1, u2, u3 into plane z = 0.
-        [Proj1x, Proj1y, Proj1z] = PlaneProj(v1x,v1y,v1z);
-        [Proj2x, Proj2y, Proj2z] = PlaneProj(v2x,v2y,v2z);
-        [Proj3x, Proj3y, Proj3z] = PlaneProj(v3x,v3y,v3z);
-        
-        %% divergence of the projections Proj1, Proj2, Proj3.
-        w1 = DivwBCs(Proj1x, Proj1y, Proj1z, dx);
-        w2 = DivwBCs(Proj2x, Proj2y, Proj2z, dx);
-        w3 = DivwBCs(Proj3x, Proj3y, Proj3z, dx);
-        
-        %% project onto surface of sphere.
-        uNormSq = u1.^2 + u2.^2 + u3.^2;
-        SProj1 = w1 - (u1.^2.*w1 + u1.*u2.*w2 + u1.*u3.*w3)./uNormSq;
-        SProj2 = w2 - (u2.*u1.*w1 + u2.^2.*w2 + u2.*u3.*w3)./uNormSq;
-        SProj3 = w3 - (u3.*u1.*w1 + u3.*u2.*w2 + u3.^2.*w3)./uNormSq;
-    
-        %% one step of forward Euler.
-        u1 = u1 + dt * SProj1;
-        u2 = u2 + dt * SProj2;
-        u3 = u3 + dt * SProj3;
+    %% one step of forward Euler.
+    u1 = u1 + dt * SProj1;
+    u2 = u2 + dt * SProj2;
+    u3 = u3 + dt * SProj3;
         
         % implement Neumann BCs.
         % for u1.
@@ -206,10 +200,18 @@ for kt = 1:numtimesteps
         t = kt*dt;
 end
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-figure;
-scatter3(u1(:),u2(:),u3(:),20,Uc,'fill');
-colormap('copper');
+%% triangulation of surface using Delaunay triangulation.
+% DT = delaunayTriangulation(u1(:),u2(:),u3(:));
+% Tri = freeBoundary(DT);
+% subplot(1,3,3);
+% trisurf(Tri,u1(:),u2(:),u3(:),Uc,'EdgeColor','none');
+% %colormap('copper');
+% axis([-1 1 -1 1 -1 1]);
+%axis off;
+
+subplot(1,3,3);
+scatter3(u3(:),u2(:),u1(:),20,Uc,'fill');
 axis([-1 1 -1 1 -1 1]);
+% colormap('copper');
 
 toc
