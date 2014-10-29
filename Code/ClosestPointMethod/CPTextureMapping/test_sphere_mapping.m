@@ -13,7 +13,7 @@ tic
 % 3D example on a sphere
 % Construct a grid in the embedding space
 
-dx = 0.1;                   % grid size
+dx = 0.0125;                   % grid size
 
 % make vectors of x, y, positions of the grid
 x1d = (-2.0:dx:2.0)';
@@ -53,31 +53,31 @@ xg = xx(band); yg = yy(band); zg = zz(band);
 
 %% Function u in the embedding space
 % this makes u into a vector, containing only points in the band
-u1 = cpxg;
-u2 = cpyg;
-u3 = cpzg;
+u1_init = cpxg;
+u2_init = cpyg;
+u3_init = cpzg;
 
 %% Construct an interpolation matrix for closest point
 
 % This creates a matrix which interpolates data from the grid x1d y1d,
 % onto the points cpx cpy.
 
-disp('Constructing interpolation and laplacian matrices');
 
-E = interp3_matrix(x1d, y1d, z1d, cpxg, cpyg, cpzg, p, band);
+
+% E = interp3_matrix(x1d, y1d, z1d, cpxg, cpyg, cpzg, p, band);
 
 % e.g., closest point extension:
 %u = E*u;
 
 %% Create Laplacian matrix for heat equation
 
-
+disp('Constructing laplacian matrix');
 L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 
 %% load initial mapping of image onto sphere.
 
-load('InitialMaps/SphereMDS101.mat');
+load('InitialMaps/StJohnsSphereMDS101.mat');
 W = double(U);
 
 %% Interpolation to get color onto computational points.
@@ -87,7 +87,7 @@ xS1 = xS(:); yS1 = yS(:); zS1 = zS(:);
 % Y = [u1, u2, u3];
 % NS = KDTreeSearcher(X);
 % IDX = knnsearch(NS,Y,'K',9);
-Uc = griddata(xS1, yS1, zS1, W, u1, u2, u3,'nearest');
+Uc = griddata(xS1, yS1, zS1, W, u1_init, u2_init, u3_init,'nearest');
 
 %% Visualize initial map.
 % DT = delaunayTriangulation(u1(:),u2(:),u3(:));
@@ -98,22 +98,24 @@ Uc = griddata(xS1, yS1, zS1, W, u1, u2, u3,'nearest');
 % axis([-1 1 -1 1 -1 1]);
 % axis off;
 
-subplot(1,3,1);
-scatter3(u3(:),u2(:),u1(:),20,Uc,'fill');
+figure;
+%subplot(1,3,1);
+scatter3(u1_init(:),u2_init(:),u3_init(:),20,Uc,'fill');
 view([0 1 0]);
 axis([-1 1 -1 1 -1 1]);
-% colormap('copper');
+colormap('gray');
+axis off;
 
 %% Add noise to map.
-N1 = 0.2*rand(length(u1),1);
-N2 = 0.2*rand(length(u2),1);
-N3 = 0.2*rand(length(u3),1);
-u1 = u1 + N1;
-u2 = u2 + N2;
-u3 = u3 + N3;
+N1 = 0.1*rand(length(u1_init),1);
+N2 = 0.1*rand(length(u2_init),1);
+N3 = 0.1*rand(length(u3_init),1);
+u1 = u1_init + N1;
+u2 = u2_init + N2;
+u3 = u3_init + N3;
 
-% map noisy data back onto sphere.
-[u1, u2, u3] = cpSphere(u1,u2,u3);
+% map noisy data back onto sphere and assign initial u1, u2, u3.
+[u1, u2, u3] = cpSphere(u1, u2, u3);
 
 % visualize
 % DT = delaunayTriangulation(u1(:),u2(:),u3(:));
@@ -123,33 +125,38 @@ u3 = u3 + N3;
 % view([0 1 0]);
 % axis([-1 1 -1 1 -1 1]);
 %axis off;
-
-subplot(1,3,2);
-scatter3(u3(:),u2(:),u1(:),20,Uc,'fill');
+%%
+%subplot(1,3,2);
+figure;
+scatter3(u1(:),u2(:),u3(:),20,Uc,'fill');
 view([0 1 0]);
 axis([-1 1 -1 1 -1 1]);
-axis xy;
-% colormap('copper');
+colormap('gray');
+axis off;
 
 %% Time-stepping for the heat equation
 
-Tf = 0.02;
+Tf = 0.005;
 dt = 0.1*dx^2;
 numtimesteps = ceil(Tf/dt)
+error = zeros(numtimesteps,1);
 % adjust for integer number of steps
 dt = Tf / numtimesteps
 for kt = 1:numtimesteps
     % explicit Euler timestepping
-    unew1 = u1 + dt*(L*u1);
-    unew2 = u2 + dt*(L*u2);
-    unew3 = u3 + dt*(L*u3);
+    unew1 = u1 + dt*L*u1;
+    unew2 = u2 + dt*L*u2;
+    unew3 = u3 + dt*L*u3;
     
     % closest point extension
-    u1 = E*unew1;
-    u2 = E*unew2;
-    u3 = E*unew3;
-    t = kt*dt;
+%      unew1 = E*unew1;
+%      unew2 = E*unew2;
+%      unew3 = E*unew3;
+
+    [u1, u2, u3] = cpSphere(unew1, unew2, unew3);
     
+    t = kt*dt;
+    error(kt) = norm([u1,u2,u3] - [u1_init, u2_init, u3_init]); 
 end
 
 %% triangulation of surface using Delaunay triangulation.
@@ -161,10 +168,17 @@ end
 % axis([-1 1 -1 1 -1 1]);
 %axis off;
 
-subplot(1,3,3);
-scatter3(u3(:),u2(:),u1(:),20,Uc,'fill');
+%subplot(1,3,3);
+figure;
+scatter3(u1(:),u2(:),u3(:),20,Uc,'fill');
 view([0 1 0]);
 axis([-1 1 -1 1 -1 1]);
-% colormap('copper');
+colormap('gray');
+axis off
+
+figure;
+plot(1:numtimesteps,error,'k');
+xlabel('$t$','Interpreter','latex','FontSize',20);
+ylabel('$\|{\bf u}({\bf x},t)-{\bf u}_0({\bf x})\|_2$','Interpreter','latex','FontSize',20);
 
 t_explicit = toc
