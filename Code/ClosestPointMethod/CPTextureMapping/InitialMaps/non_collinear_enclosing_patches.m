@@ -7,7 +7,7 @@ XS_tan_2d = XS_tan(:,1:2);
 cpX_tan_2d = cpX_tan(1:2)';
 
 % check if 3 closest point are non collinear
-if enclosing(XS_tan_2d(1:3,:), cpX_tan_2d)
+if enclosing(XS_tan_2d(1:4,:), cpX_tan_2d)
     if non_collinear(XS_tan_2d(1:4,:))
         patch = XS_tan_2d(1:4,:);
         st_patch = st(1:4,:);
