@@ -135,9 +135,17 @@ Uc = griddata(uu(:), vv(:), Tg, cpX_st(:,1), cpX_st(:,2),'natural');
 
 figure;
 %subplot(1,3,1);
-scatter3(cpxg(idxx),cpyg(idxx),cpzg(idxx),20,Uc,'fill');
+scatter3(cpxg(idxx),cpyg(idxx),cpzg(idxx),1,Uc,'fill');
 view([0 1 0]);
 axis([-1 1 -1 1 -1 1]);
 colormap('gray');
 axis off;
+
+% DT = delaunayTriangulation(cpxg(idxx),cpyg(idxx),cpzg(idxx));
+% Tri = freeBoundary(DT);
+% subplot(1,3,3);
+% trisurf(Tri,cpxg(idxx),cpyg(idxx),cpzg(idxx),Uc,'EdgeColor','none');
+% view([0 1 0]);
+% axis([-1 1 -1 1 -1 1]);
+% axis off;
  toc
