@@ -7,5 +7,5 @@ n = 20;
 W = double(U);
 tfin = toc
 
-save(strcat('InitialMaps/StJohnsSphereMDS',num2str(n+1),'.mat'),'newx','newy',...
+save(strcat('StJohnsSphereMDS_subset',num2str(n+1),'.mat'),'newx','newy',...
     'xS','yS','zS','U','tfin');

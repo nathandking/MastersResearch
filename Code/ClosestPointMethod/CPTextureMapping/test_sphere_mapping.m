@@ -77,7 +77,7 @@ L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 %% load initial mapping of image onto sphere.
 
-load('InitialMaps/StJohnsSphereMDS101.mat');
+load('InitialMaps/StJohnsSphereMDSBuiltin41.mat');
 W = double(U);
 
 %% Interpolation to get color onto computational points.

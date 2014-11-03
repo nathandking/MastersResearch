@@ -1,11 +1,13 @@
-function [newx, newy, xS, yS, zS, U] = InitialMap(n)
+function [newx, newy, xS, yS, zS, U] = InitialMap(n, method)
 %% Define coordinates on surface.
 [xS,yS,zS] = sphere(n);
 
 %% Compute geodesic distance between pairs of points.
 % This below only works for a sphere!
-A = [xS(:), yS(:), zS(:)];
-NumPts = length(xS(:));
+S = [xS(:), yS(:), zS(:)];
+[XS,ia,ic] = unique(S,'rows'); 
+A = XS;
+NumPts = size(XS,1);
 M = zeros(NumPts);
 for j = 1:NumPts
     for i = 1:NumPts
@@ -13,12 +15,20 @@ for j = 1:NumPts
     end
 end
 
-%% Apply multidimensional scaling to determine flattened coordinates.
-[newx, newy] = MDS(M);
 
+    J = eye(NumPts) - ones(NumPts)./(NumPts);
+    B = -0.5 * J * M * J;
+
+%% Apply multidimensional scaling to determine flattened coordinates.
+%[newx, newy] = MDS(M);
+newxy = compute_mapping(S, method, 2);
+newx = newxy(:,1);
+newy = newxy(:,2);
 %% use above flattened coordinates to place texture image on surface.
-T = imread('BlurredThreeShapes512.jpg');
+T = imread('../../../Images/StJohns.jpg');
+T = rgb2gray(T);
 Tg = double(T(:));
+
 
 % scale texture image to lie within (newx,newy) coordinates.
 xmin = min(newx); ymin = min(newy);
