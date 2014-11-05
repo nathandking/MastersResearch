@@ -20,7 +20,7 @@ end
     B = -0.5 * J * M * J;
 
 %% Apply multidimensional scaling to determine flattened coordinates.
-[newx, newy] = MDS(M);
+[newx, newy] = MDS(B);
 
 %% use above flattened coordinates to place texture image on surface.
 T = imread('../../../Images/StJohns.jpg');
