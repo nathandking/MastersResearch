@@ -15,7 +15,7 @@ nz = length(z1d);
 
 %% load initial mapping of image onto sphere.
 
-load('InitialMaps/SphereMDS41.mat');
+load('InitialMaps/tests/old_initial_maps/SphereMDS41.mat');
 W = double(U);
 
 %% initial planar image.
