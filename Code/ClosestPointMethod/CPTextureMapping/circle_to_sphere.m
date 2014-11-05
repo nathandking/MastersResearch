@@ -108,6 +108,7 @@ for kt = 1:numtimesteps
 %      unew2 = E*unew2;
 %      unew3 = E*unew3;
 
+    
     [u1, u2, u3] = cpEllipsoid(unew1, unew2, unew3,[2,1],[],'y');
 figure(2);
 hold off
