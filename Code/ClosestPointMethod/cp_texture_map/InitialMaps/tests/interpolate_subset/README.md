@@ -1,0 +1,3 @@
+This folder contains two attempts create the initial map by interpolating with an initial smaller subset mapped using MDS. This directory does not work in its current state, however interpolate_init_map2.m is closer to making this work. The different cases are becoming too complicated and maybe another direction is better.
+
+Note: this has been moved into this directory without changing calls to files in other directories. Paths will need to be updated.
