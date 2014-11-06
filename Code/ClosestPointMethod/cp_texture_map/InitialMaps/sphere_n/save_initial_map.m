@@ -1,5 +1,5 @@
 restoredefaultpath;
-addpath('../../../cp_matrices_Sphere');
+addpath('../../cp_matrices_Sphere');
 
 tic
 n = 300;

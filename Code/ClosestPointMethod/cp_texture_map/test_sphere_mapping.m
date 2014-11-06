@@ -1,9 +1,7 @@
-%% First attempt to do manifold mapping with closest point method.
-% This code does not implement the cp(x) on the plane first before the
-% cp(x) onto the sphere. However since we are just doing the laplacian of
-% this and the computational grid is uniform this should be the same result
-% since the laplacian should not change points away from the boundary.
-% However the general approach needs to be implemented.
+%% Harmonic mapping from a plane to sphere.
+% visualization of the mapping is shown by diffusing a noisy texture mapped
+% image. The initial texture map is computed using multidimensional
+% scaling and is implemented in InitialMaps/sphere_n/.
 clear all
 close all
 restoredefaultpath;
@@ -60,7 +58,7 @@ u3_init = cpzg;
 %% Construct an interpolation matrix for closest point
 
 % plotting grid on sphere, based on parameterization
-[xp,yp,zp] = sphere(300);
+[xp,yp,zp] = sphere(300);   % number of points must match initial map size.
 xp1 = xp(:); yp1 = yp(:); zp1 = zp(:);
 [th_plot, phi_plot, r] = cart2sph(xp1,yp1,zp1);
 % Eplot is a matrix which interpolations data onto the plotting grid
@@ -73,37 +71,19 @@ L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 
 %% load initial mapping of image onto sphere.
-load('InitialMaps/test_subset_map/sphere_n/Sphere_MDS_noncp301.mat');
-load('InitialMaps/test_subset_map/sphere_n/Sphere_MDS_noncp_color90601.mat');
+load('InitialMaps/sphere_n/Sphere_MDS_noncp301.mat');
+load('InitialMaps/sphere_n/mandrill_Sphere_MDS_noncp_color301.mat');
 W = double(Urgb);
 
-%% Interpolation to get color onto computational points.
+%% plot the initial texture mapped image.
+U_plot_init = [Eplot*u1_init, Eplot*u2_init, Eplot*u3_init];
+[V, F, C] = tri_color(U_plot_init, W); 
 
-xS1 = cpX(:,1); yS1 = cpX(:,2); zS1 = cpX(:,3);
-% X = [xS1, yS1, zS1];
-% Y = [u1, u2, u3];
-% NS = KDTreeSearcher(X);
-% IDX = knnsearch(NS,Y,'K',9);
-U1 = griddata(xS1, yS1, zS1, W(:,1), u1_init, u2_init, u3_init,'nearest');
-U2 = griddata(xS1, yS1, zS1, W(:,2), u1_init, u2_init, u3_init,'nearest');
-U3 = griddata(xS1, yS1, zS1, W(:,3), u1_init, u2_init, u3_init,'nearest');
-
-Uc = [U1, U2, U3];
-%% Visualize initial map.
-% DT = delaunayTriangulation(u1(:),u2(:),u3(:));
-% Tri = freeBoundary(DT);
-% subplot(1,3,1);
-% trisurf(Tri,u1(:),u2(:),u3(:),Uc,'EdgeColor','none');
-% view([0 1 0]);
-% axis([-1 1 -1 1 -1 1]);
-% axis off;
-
-figure;
-%subplot(1,3,1);
-scatter3(u1_init(:),u2_init(:),u3_init(:),20,Uc,'fill');
+figure(1);
+patch('Vertices', V, 'Faces', F,'FaceVertexCData', C,'FaceColor',...
+    'interp','edgecolor', 'none');
 view([90 0]);
 axis([-1 1 -1 1 -1 1]);
-colormap('gray');
 axis off;
 
 %% Add noise to map.
@@ -117,24 +97,18 @@ u3 = u3_init + N3;
 % map noisy data back onto sphere and assign initial u1, u2, u3.
 [u1, u2, u3] = cpSphere(u1, u2, u3);
 
-% visualize
-% DT = delaunayTriangulation(u1(:),u2(:),u3(:));
-% Tri = freeBoundary(DT);
-% subplot(1,3,2);
-% trisurf(Tri,u1(:),u2(:),u3(:),Uc,'EdgeColor','none');
-% view([0 1 0]);
-% axis([-1 1 -1 1 -1 1]);
-%axis off;
-%%
-%subplot(1,3,2);
-figure;
-scatter3(u1(:),u2(:),u3(:),20,Uc,'fill');
+%% plot the noisy texture mapped initial image.
+U_plot_noisy = [Eplot*u1, Eplot*u2, Eplot*u3];
+[V, F, C] = tri_color(U_plot_noisy, W); 
+
+figure(2);
+patch('Vertices', V, 'Faces', F,'FaceVertexCData', C,'FaceColor',...
+    'interp','edgecolor', 'none');
 view([90 0]);
 axis([-1 1 -1 1 -1 1]);
-colormap('gray');
 axis off;
 
-%% Time-stepping for the heat equation
+%% Time-stepping for harmonic mapping.
 
 Tf = 0.005;
 dt = 0.1*dx^2;
@@ -147,11 +121,6 @@ for kt = 1:numtimesteps
     unew1 = u1 + dt*L*u1;
     unew2 = u2 + dt*L*u2;
     unew3 = u3 + dt*L*u3;
-    
-    % closest point extension
-%      unew1 = E*unew1;
-%      unew2 = E*unew2;
-%      unew3 = E*unew3;
 
     [u1, u2, u3] = cpSphere(unew1, unew2, unew3);
     
@@ -159,38 +128,19 @@ for kt = 1:numtimesteps
     error(kt) = norm([u1,u2,u3] - [u1_init, u2_init, u3_init]); 
 end
 
-%% triangulation of surface using Delaunay triangulation.
-% DT = delaunayTriangulation(u1(:),u2(:),u3(:));
-% Tri = freeBoundary(DT);
-% subplot(1,3,3);
-% trisurf(Tri,u1(:),u2(:),u3(:),Uc,'EdgeColor','none');
-% view([0 1 0]);
-% axis([-1 1 -1 1 -1 1]);
-%axis off;
+%% plot difused mapping visualizing with the texture mapped image.
+U_plot = [Eplot*u1, Eplot*u2, Eplot*u3];
+[V, F, C] = tri_color(U_plot, W); 
 
-%subplot(1,3,3);
-figure;
-scatter3(u1,u2,u3,20,Uc,'fill');
+figure(3);
+patch('Vertices', V, 'Faces', F,'FaceVertexCData', C,'FaceColor',...
+    'interp','edgecolor', 'none');
 view([90 0]);
 axis([-1 1 -1 1 -1 1]);
-colormap('gray');
-axis off
+axis off;
 
-%%
-u1_plot = Eplot*u1;
-u2_plot = Eplot*u2;
-u3_plot = Eplot*u3;
-
-figure;
-scatter3(u1_plot,u2_plot,u3_plot,20,W,'fill');
-view([90 0]);
-axis([-1 1 -1 1 -1 1]);
-colormap('gray');
-axis off
-
-
-%%
-figure;
+%% plot the difference between the coordinates and original coordinates.
+figure(4);
 plot(1:numtimesteps,error,'k');
 xlabel('$t$','Interpreter','latex','FontSize',20);
 ylabel('$\|{\bf u}({\bf x},t)-{\bf u}_0({\bf x})\|_2$','Interpreter','latex','FontSize',20);
