@@ -2,7 +2,7 @@ restoredefaultpath;
 addpath('../../cp_matrices_Sphere');
 
 tic
-dx = 0.05;
+dx = 0.04;
 [newxy, cpX, sub_idx] = compute_initial_map(dx);
 tfin = toc;
 

@@ -2,8 +2,9 @@ load('Sphere_MDSp05.mat');
 
 %% use above flattened coordinates to place texture image on surface.
 T = imread('../../Images/StJohns.jpg');
-T = flipud(T);
-T = fliplr(T);
+% T = flipud(T);
+% T = fliplr(T);
+T = rot90(T,2);
 Tr = double(T(:,:,1));
 Tg = double(T(:,:,2));
 Tb = double(T(:,:,3));

@@ -57,14 +57,7 @@ cpX_subset = [cpxg, cpyg, cpzg];
 %% Compute geodesic distance between pairs of points.
 % This below only works for a sphere!
 
-NumPts = size(uni_cpX,1);
-M = zeros(NumPts);
-for j = 2:NumPts
-    for i = 1:j-1
-        M(i,j) = (real(acos(sum(uni_cpX(i,:).*uni_cpX(j,:))))).^2;
-    end
-end
-M = M + M';
+M = real(acos(uni_cpX*uni_cpX')).^2;
 
 %% Apply multidimensional scaling to determine flattened coordinates.
 

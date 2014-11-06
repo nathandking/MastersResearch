@@ -13,7 +13,7 @@ tic
 % 3D example on a sphere
 % Construct a grid in the embedding space
 
-dx = 0.0125;                   % grid size
+dx = 0.05;                   % grid size
 
 % make vectors of x, y, positions of the grid
 x1d = (-2.0:dx:2.0)';
@@ -59,15 +59,12 @@ u3_init = cpzg;
 
 %% Construct an interpolation matrix for closest point
 
-% This creates a matrix which interpolates data from the grid x1d y1d,
-% onto the points cpx cpy.
-
-
-
-% E = interp3_matrix(x1d, y1d, z1d, cpxg, cpyg, cpzg, p, band);
-
-% e.g., closest point extension:
-%u = E*u;
+% plotting grid on sphere, based on parameterization
+[xp,yp,zp] = sphere(300);
+xp1 = xp(:); yp1 = yp(:); zp1 = zp(:);
+[th_plot, phi_plot, r] = cart2sph(xp1,yp1,zp1);
+% Eplot is a matrix which interpolations data onto the plotting grid
+Eplot = interp3_matrix(x1d, y1d, z1d, xp1, yp1, zp1, p, band);
 
 %% Create Laplacian matrix for heat equation
 
@@ -76,19 +73,22 @@ L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 
 %% load initial mapping of image onto sphere.
-
-load('InitialMaps/StJohnsSphereMDSBuiltin41.mat');
-W = double(U);
+load('InitialMaps/test_subset_map/sphere_n/Sphere_MDS_noncp301.mat');
+load('InitialMaps/test_subset_map/sphere_n/Sphere_MDS_noncp_color90601.mat');
+W = double(Urgb);
 
 %% Interpolation to get color onto computational points.
 
-xS1 = xS(:); yS1 = yS(:); zS1 = zS(:);
+xS1 = cpX(:,1); yS1 = cpX(:,2); zS1 = cpX(:,3);
 % X = [xS1, yS1, zS1];
 % Y = [u1, u2, u3];
 % NS = KDTreeSearcher(X);
 % IDX = knnsearch(NS,Y,'K',9);
-Uc = griddata(xS1, yS1, zS1, W, u1_init, u2_init, u3_init,'nearest');
+U1 = griddata(xS1, yS1, zS1, W(:,1), u1_init, u2_init, u3_init,'nearest');
+U2 = griddata(xS1, yS1, zS1, W(:,2), u1_init, u2_init, u3_init,'nearest');
+U3 = griddata(xS1, yS1, zS1, W(:,3), u1_init, u2_init, u3_init,'nearest');
 
+Uc = [U1, U2, U3];
 %% Visualize initial map.
 % DT = delaunayTriangulation(u1(:),u2(:),u3(:));
 % Tri = freeBoundary(DT);
@@ -101,7 +101,7 @@ Uc = griddata(xS1, yS1, zS1, W, u1_init, u2_init, u3_init,'nearest');
 figure;
 %subplot(1,3,1);
 scatter3(u1_init(:),u2_init(:),u3_init(:),20,Uc,'fill');
-view([0 1 0]);
+view([90 0]);
 axis([-1 1 -1 1 -1 1]);
 colormap('gray');
 axis off;
@@ -129,7 +129,7 @@ u3 = u3_init + N3;
 %subplot(1,3,2);
 figure;
 scatter3(u1(:),u2(:),u3(:),20,Uc,'fill');
-view([0 1 0]);
+view([90 0]);
 axis([-1 1 -1 1 -1 1]);
 colormap('gray');
 axis off;
@@ -170,12 +170,26 @@ end
 
 %subplot(1,3,3);
 figure;
-scatter3(u1(:),u2(:),u3(:),20,Uc,'fill');
-view([0 1 0]);
+scatter3(u1,u2,u3,20,Uc,'fill');
+view([90 0]);
 axis([-1 1 -1 1 -1 1]);
 colormap('gray');
 axis off
 
+%%
+u1_plot = Eplot*u1;
+u2_plot = Eplot*u2;
+u3_plot = Eplot*u3;
+
+figure;
+scatter3(u1_plot,u2_plot,u3_plot,20,W,'fill');
+view([90 0]);
+axis([-1 1 -1 1 -1 1]);
+colormap('gray');
+axis off
+
+
+%%
 figure;
 plot(1:numtimesteps,error,'k');
 xlabel('$t$','Interpreter','latex','FontSize',20);
