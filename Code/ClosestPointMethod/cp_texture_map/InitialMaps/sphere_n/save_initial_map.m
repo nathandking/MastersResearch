@@ -1,8 +1,5 @@
-restoredefaultpath;
-addpath('../../cp_matrices_Sphere');
-
 tic
-n = 300;
+n = 400;
 [newxy, XS, sub_idx] = compute_initial_map(n);
 tfin = toc;
 

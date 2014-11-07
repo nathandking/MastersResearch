@@ -2,7 +2,7 @@ tic
 load('Sphere_MDS_noncp301.mat');
 
 %% use above flattened coordinates to place texture image on surface.
-T = imread('../../Images/mandrill.jpg');
+T = imread('../../Images/color_cboard.jpg');
 
 Tr = double(T(:,:,1));
 Tg = double(T(:,:,2));
@@ -35,7 +35,7 @@ Ub = Ub/max(Ub);
 Urgb = zeros(size(XS,1),3);
 Urgb(sub_idx,:) = [Ur, Ug, Ub];
 tfin_color = toc;
-save(strcat('mandrill_Sphere_MDS_noncp_color',num2str(sqrt(size(XS,1))),'.mat'),'Urgb','tfin_color');
+save(strcat('color_cboard_Sphere_MDS_noncp_color',num2str(sqrt(size(XS,1))),'.mat'),'Urgb','tfin_color');
 
 
 

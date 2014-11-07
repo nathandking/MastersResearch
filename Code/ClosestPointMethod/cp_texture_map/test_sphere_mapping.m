@@ -72,7 +72,8 @@ L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 %% load initial mapping of image onto sphere.
 load('InitialMaps/sphere_n/Sphere_MDS_noncp301.mat');
-load('InitialMaps/sphere_n/mandrill_Sphere_MDS_noncp_color301.mat');
+load('InitialMaps/sphere_n/cool-abstract-art_Sphere_MDS_noncp_color301.mat');
+%W = double(Ugray);
 W = double(Urgb);
 
 %% plot the initial texture mapped image.
@@ -81,15 +82,16 @@ U_plot_init = [Eplot*u1_init, Eplot*u2_init, Eplot*u3_init];
 
 figure(1);
 patch('Vertices', V, 'Faces', F,'FaceVertexCData', C,'FaceColor',...
-    'interp','edgecolor', 'none');
+    'flat','edgecolor', 'none');
 view([90 0]);
 axis([-1 1 -1 1 -1 1]);
 axis off;
 
 %% Add noise to map.
-N1 = 0.1*rand(length(u1_init),1);
-N2 = 0.1*rand(length(u2_init),1);
-N3 = 0.1*rand(length(u3_init),1);
+sigma = 0.075;
+N1 = sigma*rand(length(u1_init),1);
+N2 = sigma*rand(length(u2_init),1);
+N3 = sigma*rand(length(u3_init),1);
 u1 = u1_init + N1;
 u2 = u2_init + N2;
 u3 = u3_init + N3;
@@ -103,7 +105,7 @@ U_plot_noisy = [Eplot*u1, Eplot*u2, Eplot*u3];
 
 figure(2);
 patch('Vertices', V, 'Faces', F,'FaceVertexCData', C,'FaceColor',...
-    'interp','edgecolor', 'none');
+    'flat','edgecolor', 'none');
 view([90 0]);
 axis([-1 1 -1 1 -1 1]);
 axis off;
@@ -134,7 +136,7 @@ U_plot = [Eplot*u1, Eplot*u2, Eplot*u3];
 
 figure(3);
 patch('Vertices', V, 'Faces', F,'FaceVertexCData', C,'FaceColor',...
-    'interp','edgecolor', 'none');
+    'flat','edgecolor', 'none');
 view([90 0]);
 axis([-1 1 -1 1 -1 1]);
 axis off;
