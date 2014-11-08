@@ -11,7 +11,7 @@ tic
 % 3D example on a sphere
 % Construct a grid in the embedding space
 
-dx = 0.05;                   % grid size
+dx = 0.025;                   % grid size
 
 % make vectors of x, y, positions of the grid
 x1d = (-2.0:dx:2.0)';
@@ -58,7 +58,7 @@ u3_init = cpzg;
 %% Construct an interpolation matrix for closest point
 
 % plotting grid on sphere, based on parameterization
-[xp,yp,zp] = sphere(300);   % number of points must match initial map size.
+[xp,yp,zp] = sphere(200);   % number of points must match initial map size.
 xp1 = xp(:); yp1 = yp(:); zp1 = zp(:);
 [th_plot, phi_plot, r] = cart2sph(xp1,yp1,zp1);
 % Eplot is a matrix which interpolations data onto the plotting grid
@@ -71,8 +71,8 @@ L = laplacian_3d_matrix(x1d,y1d,z1d, order, band, band);
 
 
 %% load initial mapping of image onto sphere.
-load('InitialMaps/sphere_n/Sphere_MDS_noncp301.mat');
-load('InitialMaps/sphere_n/cool-abstract-art_Sphere_MDS_noncp_color301.mat');
+load('InitialMaps/sphere_n/flattening/Sphere_MDS_noncp201.mat');
+load('InitialMaps/sphere_n/color_maps/StJohns_Sphere_MDS_noncp_color201.mat');
 %W = double(Ugray);
 W = double(Urgb);
 
@@ -82,7 +82,7 @@ U_plot_init = [Eplot*u1_init, Eplot*u2_init, Eplot*u3_init];
 
 figure(1);
 patch('Vertices', V, 'Faces', F,'FaceVertexCData', C,'FaceColor',...
-    'flat','edgecolor', 'none');
+    'interp','edgecolor', 'interp');
 view([90 0]);
 axis([-1 1 -1 1 -1 1]);
 axis off;
@@ -105,7 +105,7 @@ U_plot_noisy = [Eplot*u1, Eplot*u2, Eplot*u3];
 
 figure(2);
 patch('Vertices', V, 'Faces', F,'FaceVertexCData', C,'FaceColor',...
-    'flat','edgecolor', 'none');
+    'interp','edgecolor', 'interp');
 view([90 0]);
 axis([-1 1 -1 1 -1 1]);
 axis off;
@@ -136,7 +136,7 @@ U_plot = [Eplot*u1, Eplot*u2, Eplot*u3];
 
 figure(3);
 patch('Vertices', V, 'Faces', F,'FaceVertexCData', C,'FaceColor',...
-    'flat','edgecolor', 'none');
+    'interp','edgecolor', 'interp');
 view([90 0]);
 axis([-1 1 -1 1 -1 1]);
 axis off;
